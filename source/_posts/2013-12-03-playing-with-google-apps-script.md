@@ -11,6 +11,8 @@ The reason I've wrote it was to automate some tasks on my dad's budget spreadshe
 * Create a new row in a given place with a given formula.
 * Duplicate a document used as template.
 
+<!-- more -->
+
 ## Insert a row
 
 I created a template row and made it hidden. Then my function uses it to create 

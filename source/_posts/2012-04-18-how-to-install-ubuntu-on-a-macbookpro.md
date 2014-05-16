@@ -8,6 +8,8 @@ I wrote about my ubuntu installation on my macbook pro a long time ago but I've 
 
 I've been waiting for a while to try a linux installation on my Macbook Pro. I have now a triple boot with Lion, Windows 7 and Ubuntu (actually is Xubunut now).
 
+<!--more-->
+
 I've just tried it and I'm probably never using it again, mostly because the battery, which gives about 3 hours on against about 6 on Lion. About Windows 7 I've installed it a long time ago. So this are the steps I followed:
 
 1. Install and enable [refit](http://refit.sourceforge.net/).
