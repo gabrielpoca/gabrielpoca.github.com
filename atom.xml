@@ -4,7 +4,7 @@
   <title><![CDATA[Wrong Way]]></title>
   <link href="http://gabrielpoca.com/atom.xml" rel="self"/>
   <link href="http://gabrielpoca.com/"/>
-  <updated>2014-05-16T15:35:38+01:00</updated>
+  <updated>2014-05-16T15:39:52+01:00</updated>
   <id>http://gabrielpoca.com/</id>
   <author>
     <name><![CDATA[Gabriel Poça]]></name>
@@ -12,15 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Streaming microphone from browser to nodejs (no plugin)]]></title>
-    <link href="http://gabrielpoca.com/blog/2014/05/11/streaming-microphone-from-browser-to-nodejs-no-plugin/"/>
-    <updated>2014-05-11T16:45:30+01:00</updated>
-    <id>http://gabrielpoca.com/blog/2014/05/11/streaming-microphone-from-browser-to-nodejs-no-plugin</id>
-    <content type="html"><![CDATA[
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Playing with Google Apps Script]]></title>
