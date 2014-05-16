@@ -1,0 +1,248 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Jekyll, nginx and capistrano - Wrong Way</title>
+	<meta name="author" content="Gabriel Poça">
+
+	
+	<meta name="description" content="Jekyll, Nginx and Capistrano Yes, I&rsquo;m blogging about blogging again. I&rsquo;ve just updated this blog so I&rsquo;m writing about it. Mostly I &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Wrong Way" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://gabrielpoca.com/blog/2013/08/10/jekyll-nginx-capistrano/">
+	<link href="/favicon.ico" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+  <img src="http://www.gravatar.com/avatar/685cd58e0e6dc5b1219027ea22e47d9d?s=160" alt="Profile Picture" style="width: 160px;" />
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		
+		
+		
+			<a class="twitter" href="http://twitter.com/gabrielgpoca" title="Twitter">Twitter</a>
+		
+		
+			<a class="github" href="https://github.com/gabrielpoca" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Jekyll, Nginx and Capistrano</h1>
+	<div class="entry-content" itemprop="articleBody"><p>Yes, I&rsquo;m blogging about blogging again. I&rsquo;ve just updated this blog so I&rsquo;m writing about it. Mostly I will tell you about my jekyll setup.</p>
+
+<p>I&rsquo;m running a <a href="http://nginx.org/">nginx</a> server. I use github to store my code. I&rsquo;ve setup <a href="https://github.com/capistrano/capistrano">capistrano</a> for automatic deploys. Everything else is jekyll.</p>
+
+<!--more-->
+
+
+<p><strong>How it works</strong>: I update my blog. I push to github. I type <code>cap deploy</code>. The code on the server is updated from github. It runs bundle install if needed on the server. It compiles jekyll and it&rsquo;s done.</p>
+
+<h2>Theme</h2>
+
+<p>I made it from scratch with html and sass (using compass and foundation like I always do). It was easy since I&rsquo;m probably what you can call a web developer. Now I have a simple and organized theme to change when ever I want.</p>
+
+<p>The tricky part was to setup sass. People normally run the <code>compass --watch</code> stuff to compile sass to a folder that jekyll loads. You start compass, you start jekyll and it&rsquo;s fine. You can even use Foreman to make it easier. There are two problems:</p>
+
+<p>To use images in css I had to write they&rsquo;re full path. That&rsquo;s not god. The solution was to make jekyll process css, but since css was generated from sass there were all kind of syntax problems.</p>
+
+<p>My solution was to use <code>gem "jekyll-assets"</code>. It&rsquo;s gives you the same as rails asset pipeline. This solved my problems.</p>
+
+<p>Also I had to put the following code in a file on the plugins folder for sass compiler to load compass. This was a hard to find solution.</p>
+
+<pre><code>Compass.sass_engine_options[:load_paths].each do |path|
+  Sass.load_paths &lt;&lt; path
+end
+</code></pre>
+
+<h2>Tasks</h2>
+
+<p>There is probably only one thing I like in octopress: <strong>Rakefile</strong>. I used some of their code to make my life easy. The rest I got searching or writing myself.</p>
+
+<pre><code>require "rubygems"
+require "bundler/setup"
+
+posts_dir = "_posts"
+
+desc 'Run the jekyll server'
+task :server do
+  system "jekyll serve -w"
+end
+
+desc 'Run the jekyll dev server with drafts'
+task :preview do
+  system "jekyll serve -w --drafts"
+end
+
+namespace :jekyll do
+  desc 'Delete generated _site files'
+  task :clean do
+    system "rm -fR _site"
+  end
+
+  desc 'Clean temporary files and run the server'
+  task :compile =&gt; [:clean] do
+    system "jekyll build"
+  end
+end
+
+
+# usage rake new_post[my-new-post] or rake new_post['my new post'] or rake new_post (defaults to "new-post")
+desc "Begin a new post in #{posts_dir}"
+task :new_post, :title do |t, args|
+  if args.title
+    title = args.title
+  else
+    print "Enter a title for your post: "
+    title = STDIN.gets.chomp
+  end
+  mkdir_p "#{posts_dir}"
+  filename = "#{posts_dir}/#{Time.now.strftime('%Y-%m-%d')}-#{title.to_url}.md"
+  if File.exist?(filename)
+    abort("rake aborted!") if ask("#{filename} already exists. Do you want to overwrite?", ['y', 'n']) == 'n'
+  end
+  puts "Creating new post: #{filename}"
+  open(filename, 'w') do |post|
+    post.puts "---"
+    post.puts "layout: post"
+    post.puts "title: \"#{title.gsub(/&amp;/,'&amp;amp;')}\""
+    post.puts "date: #{Time.now.strftime('%Y-%m-%d %H:%M')}"
+    post.puts "---"
+  end
+end
+</code></pre>
+
+<h2>Deploy</h2>
+
+<p>To deploy I just run <code>cap deploy</code>. Everything else <a href="https://github.com/capistrano/capistrano">capistrano</a> takes care of.</p>
+
+<p>I need two gems for this:</p>
+
+<pre><code>gem 'capistrano'
+gem 'rvm-capistrano'
+</code></pre>
+
+<p>And the following code is my <em>deploy.rb</em> file. Notice the <code>require "rvm/capistrano"</code> it is needed if you use rvm.</p>
+
+<pre><code>require "rvm/capistrano"
+require "bundler/capistrano"
+
+set :user, 'USERNAME'
+set :deploy_to, "SERVER FOLDER TO DEPLOY TO"
+set :use_sudo, false
+
+set :application, "APPLICATION NAME"
+server "SERVER_NAME", :app, :web, :db, :primary =&gt; true
+
+ssh_options[:forward_agent] = true
+set :bundle_flags, "--deployment"
+ssh_options[:keys] = %w(PATH TO SSH KEY)
+set :scm, 'git'
+set :repository,  "REPOSITORY URL"
+set :branch, 'master'
+set :deploy_via, :remote_cache
+set :keep_releases, 5
+
+namespace :deploy do
+  [:start, :stop, :restart, :finalize_update].each do |t|
+    desc "#{t} task is a no-op with jekyll"
+    task t, :roles =&gt; :app do ; end
+  end
+
+  # compile compass and then jekyll
+  task :finalize_update do
+    run "cd #{latest_release}; rake jekyll:compile"
+  end
+end
+</code></pre>
+
+<h2>Problems</h2>
+
+<p>So I was using <a href="http://octopress.org/">Octopress</a> for a while. Not that I write that much, but I try to. The problem with octopress is that it is too much. Seriously, it is too much.</p>
+
+<p>Sass compilation time to slow.</p>
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+
+    Gabriel Poça
+
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+		</div>
+	</div>
+	
+
+</body>
+</html>

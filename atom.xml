@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Wrong Way]]></title>
+  <link href="http://gabrielpoca.com/atom.xml" rel="self"/>
+  <link href="http://gabrielpoca.com/"/>
+  <updated>2014-05-16T15:35:38+01:00</updated>
+  <id>http://gabrielpoca.com/</id>
+  <author>
+    <name><![CDATA[Gabriel Poça]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Streaming microphone from browser to nodejs (no plugin)]]></title>
+    <link href="http://gabrielpoca.com/blog/2014/05/11/streaming-microphone-from-browser-to-nodejs-no-plugin/"/>
+    <updated>2014-05-11T16:45:30+01:00</updated>
+    <id>http://gabrielpoca.com/blog/2014/05/11/streaming-microphone-from-browser-to-nodejs-no-plugin</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Playing with Google Apps Script]]></title>
+    <link href="http://gabrielpoca.com/blog/2013/12/03/playing-with-google-apps-script/"/>
+    <updated>2013-12-03T00:52:00+00:00</updated>
+    <id>http://gabrielpoca.com/blog/2013/12/03/playing-with-google-apps-script</id>
+    <content type="html"><![CDATA[<p>I wrote a google apps script for a spreadsheet.
+I&rsquo;ve never done it before and I hope not to to do it again.</p>
+
+<p>The reason I&rsquo;ve wrote it was to automate some tasks on my dad&rsquo;s budget spreadsheet:</p>
+
+<ul>
+<li>Create a new row in a given place with a given formula.</li>
+<li>Duplicate a document used as template.</li>
+</ul>
+
+
+<!-- more -->
+
+
+<h2>Insert a row</h2>
+
+<p>I created a template row and made it hidden. Then my function uses it to create
+a new one and place it in the right place. Everything gets copied,
+including the formulas.</p>
+
+<pre><code>function newLine() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getActiveSheet();
+  sheet.insertRowsAfter(10, 1);
+  sheet.getRange("A10:F10").copyTo(sheet.getRange("A11:F11"));
+}
+</code></pre>
+
+<h2>Create a new document</h2>
+
+<p>I created a default document to be used as a template for all budgets.
+Then I need a function to duplicate that document (teaching my dad
+wasn&rsquo;t working).</p>
+
+<pre><code>function newSheet() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getSheetByName('Default')
+  sheet.copyTo(spreadsheet).setName("Novo orçamento");
+}
+</code></pre>
+
+<h2>Wrap it up</h2>
+
+<p>I made both functions available on the top menu, as seen in the image</p>
+
+<p><img src="http://gabrielpoca.com/images/2013/12/google-apps-print.png" alt="google-apps-pring" /></p>
+
+<p>And the full script</p>
+
+<pre><code>function newLine() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getActiveSheet();
+  sheet.insertRowsAfter(10, 1);
+  sheet.getRange("A10:F10").copyTo(sheet.getRange("A11:F11"));
+}
+
+function newSheet() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getSheetByName('Default')
+  sheet.copyTo(spreadsheet).setName("Novo orçamento");
+}
+
+// The onOpen function is executed automatically every time a Spreadsheet is loaded
+function onOpen() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var menuEntries = [];
+
+  menuEntries.push({name: "Novo orçamento", functionName: "newSheet"});
+  menuEntries.push(null);
+  menuEntries.push({name: "Adicionar novo produto", functionName: "newLine"});
+
+  ss.addMenu("Orçamento", menuEntries);
+}
+</code></pre>
+
+<p>It took a whole morning.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Jekyll, nginx and capistrano]]></title>
+    <link href="http://gabrielpoca.com/blog/2013/08/10/jekyll-nginx-capistrano/"/>
+    <updated>2013-08-10T16:56:00+01:00</updated>
+    <id>http://gabrielpoca.com/blog/2013/08/10/jekyll-nginx-capistrano</id>
+    <content type="html"><![CDATA[<p>Yes, I&rsquo;m blogging about blogging again. I&rsquo;ve just updated this blog so I&rsquo;m writing about it. Mostly I will tell you about my jekyll setup.</p>
+
+<p>I&rsquo;m running a <a href="http://nginx.org/">nginx</a> server. I use github to store my code. I&rsquo;ve setup <a href="https://github.com/capistrano/capistrano">capistrano</a> for automatic deploys. Everything else is jekyll.</p>
+
+<!--more-->
+
+
+<p><strong>How it works</strong>: I update my blog. I push to github. I type <code>cap deploy</code>. The code on the server is updated from github. It runs bundle install if needed on the server. It compiles jekyll and it&rsquo;s done.</p>
+
+<h2>Theme</h2>
+
+<p>I made it from scratch with html and sass (using compass and foundation like I always do). It was easy since I&rsquo;m probably what you can call a web developer. Now I have a simple and organized theme to change when ever I want.</p>
+
+<p>The tricky part was to setup sass. People normally run the <code>compass --watch</code> stuff to compile sass to a folder that jekyll loads. You start compass, you start jekyll and it&rsquo;s fine. You can even use Foreman to make it easier. There are two problems:</p>
+
+<p>To use images in css I had to write they&rsquo;re full path. That&rsquo;s not god. The solution was to make jekyll process css, but since css was generated from sass there were all kind of syntax problems.</p>
+
+<p>My solution was to use <code>gem "jekyll-assets"</code>. It&rsquo;s gives you the same as rails asset pipeline. This solved my problems.</p>
+
+<p>Also I had to put the following code in a file on the plugins folder for sass compiler to load compass. This was a hard to find solution.</p>
+
+<pre><code>Compass.sass_engine_options[:load_paths].each do |path|
+  Sass.load_paths &lt;&lt; path
+end
+</code></pre>
+
+<h2>Tasks</h2>
+
+<p>There is probably only one thing I like in octopress: <strong>Rakefile</strong>. I used some of their code to make my life easy. The rest I got searching or writing myself.</p>
+
+<pre><code>require "rubygems"
+require "bundler/setup"
+
+posts_dir = "_posts"
+
+desc 'Run the jekyll server'
+task :server do
+  system "jekyll serve -w"
+end
+
+desc 'Run the jekyll dev server with drafts'
+task :preview do
+  system "jekyll serve -w --drafts"
+end
+
+namespace :jekyll do
+  desc 'Delete generated _site files'
+  task :clean do
+    system "rm -fR _site"
+  end
+
+  desc 'Clean temporary files and run the server'
+  task :compile =&gt; [:clean] do
+    system "jekyll build"
+  end
+end
+
+
+# usage rake new_post[my-new-post] or rake new_post['my new post'] or rake new_post (defaults to "new-post")
+desc "Begin a new post in #{posts_dir}"
+task :new_post, :title do |t, args|
+  if args.title
+    title = args.title
+  else
+    print "Enter a title for your post: "
+    title = STDIN.gets.chomp
+  end
+  mkdir_p "#{posts_dir}"
+  filename = "#{posts_dir}/#{Time.now.strftime('%Y-%m-%d')}-#{title.to_url}.md"
+  if File.exist?(filename)
+    abort("rake aborted!") if ask("#{filename} already exists. Do you want to overwrite?", ['y', 'n']) == 'n'
+  end
+  puts "Creating new post: #{filename}"
+  open(filename, 'w') do |post|
+    post.puts "---"
+    post.puts "layout: post"
+    post.puts "title: \"#{title.gsub(/&amp;/,'&amp;amp;')}\""
+    post.puts "date: #{Time.now.strftime('%Y-%m-%d %H:%M')}"
+    post.puts "---"
+  end
+end
+</code></pre>
+
+<h2>Deploy</h2>
+
+<p>To deploy I just run <code>cap deploy</code>. Everything else <a href="https://github.com/capistrano/capistrano">capistrano</a> takes care of.</p>
+
+<p>I need two gems for this:</p>
+
+<pre><code>gem 'capistrano'
+gem 'rvm-capistrano'
+</code></pre>
+
+<p>And the following code is my <em>deploy.rb</em> file. Notice the <code>require "rvm/capistrano"</code> it is needed if you use rvm.</p>
+
+<pre><code>require "rvm/capistrano"
+require "bundler/capistrano"
+
+set :user, 'USERNAME'
+set :deploy_to, "SERVER FOLDER TO DEPLOY TO"
+set :use_sudo, false
+
+set :application, "APPLICATION NAME"
+server "SERVER_NAME", :app, :web, :db, :primary =&gt; true
+
+ssh_options[:forward_agent] = true
+set :bundle_flags, "--deployment"
+ssh_options[:keys] = %w(PATH TO SSH KEY)
+set :scm, 'git'
+set :repository,  "REPOSITORY URL"
+set :branch, 'master'
+set :deploy_via, :remote_cache
+set :keep_releases, 5
+
+namespace :deploy do
+  [:start, :stop, :restart, :finalize_update].each do |t|
+    desc "#{t} task is a no-op with jekyll"
+    task t, :roles =&gt; :app do ; end
+  end
+
+  # compile compass and then jekyll
+  task :finalize_update do
+    run "cd #{latest_release}; rake jekyll:compile"
+  end
+end
+</code></pre>
+
+<h2>Problems</h2>
+
+<p>So I was using <a href="http://octopress.org/">Octopress</a> for a while. Not that I write that much, but I try to. The problem with octopress is that it is too much. Seriously, it is too much.</p>
+
+<p>Sass compilation time to slow.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[From Vim to Sublime Text 2]]></title>
+    <link href="http://gabrielpoca.com/blog/2012/08/31/from_vim_to_sublime_text_2/"/>
+    <updated>2012-08-31T00:00:00+01:00</updated>
+    <id>http://gabrielpoca.com/blog/2012/08/31/from_vim_to_sublime_text_2</id>
+    <content type="html"><![CDATA[<p>I&rsquo;m addicted to Vim! Or at least I was. You can really get along with vim once you get to know it.
+But sooner or later you&rsquo;ll miss some features. I got to know Sublime Text, so here is a small review.</p>
+
+<!--more-->
+
+
+<p>Things I love about vim:
+* You can do everything with the keyboard and there are shortcuts for everything.
+* Lots of plugins.
+* Very customizable.
+* Geeky.</p>
+
+<p>Things I miss in Vim:</p>
+
+<ul>
+<li>Sidebar with features for files and folders (rename, drag and drop, etc).</li>
+<li>Better mouse support.</li>
+<li>Tabs.</li>
+</ul>
+
+
+<p>I could live with this, but why should I? Developing in rails I have lots of files and folders. This was my deadline, I needed a sidebar and tabs. I tried TextMate and Sublime Text. I still use vim, for editing single files in the console, but that is all.</p>
+
+<table style="margin: 1em 0 1em 0;">
+    <tr>
+        <td>
+            <div style="margin: 1.5em 1em 1.5em 1em;">
+                <img style="max-width:150px;" src="http://gabrielpoca.com/images/2012/09/sublime_text_icon.png" />
+            </div>
+        </td>
+        <td>
+            <div>
+                Why Sublime Text? Why not TextMate? I don&#8217;t like it, I liked the old interface, before it became open source. Now it has some nice new features, but I just don&#8217;t like the new interface. It&#8217;s a matter of taste. Besides, Sublime has <strong>support for TextMate bundles and themes</strong>. Also, it&#8217;s <strong>cross platform</strong>.
+            </div>
+        </td>
+    </tr>
+</table>
+
+
+<p>So, here are my tips and tricks to customize Sublime Text.</p>
+
+<h3>Install the Package Control</h3>
+
+<p><a href="http://wbond.net/sublime_packages/package_control">Package Control</a> allows you to install/remove packages from GitHub without leaving Sublime. This is where most of the magic happens.</p>
+
+<h3>Enable Vintage Mode</h3>
+
+<p>With <a href="http://www.sublimetext.com/docs/2/vintage.html">Vintage Mode</a> you get some vim features, like edit/visual/insert mode and w, b, e, c-w, c-d shortcuts and more. Replace <code>"ignored_packages": ["Vintage"]</code> to <code>"ignored_packages": []</code> in settings.</p>
+
+<h3>Change Line Padding</h3>
+
+<p>Add <code>"line_padding_bottom": -1</code> to settings.</p>
+
+<h3>Install Themes</h3>
+
+<p>Install <a href="https://github.com/netatoo/phoenix-theme">phoenix-theme</a>, it has sidebar icons. The best I found so far.</p>
+
+<h3>Shortcuts</h3>
+
+<p>Besides the Vintage Mode shortcuts, knowing the shortcuts is very useful. <a href="https://gist.github.com/1207002">Here</a>.</p>
+
+<h2>In The End</h2>
+
+<p>Enjoy. And let go of Vim, at leat for big stuff, it is holding you down.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[About Codebits Last Year]]></title>
+    <link href="http://gabrielpoca.com/blog/2012/08/24/about_codebits_last_year/"/>
+    <updated>2012-08-24T00:00:00+01:00</updated>
+    <id>http://gabrielpoca.com/blog/2012/08/24/about_codebits_last_year</id>
+    <content type="html"><![CDATA[<p>Last year I attended <a href="https://codebits.eu">codebits</a> for the first time. It was amazing! It&rsquo;s the technology conference you shouldn&rsquo;t miss if you&rsquo;re in Portugal.</p>
+
+<p>It&rsquo;s not a three days straight in front of a computer wearing smelly clothes. It may seem like, it may also be like it, but it is much more. Just remembering the awesome nyan cat moment. The hunt for badges. Stuff to win. O&#8217;Reilly&rsquo;s book at half the price. Many talks and challenges. And strange people, just how I like it.</p>
+
+<p>I came back with a bag full of shirts and great ideas for the next year. Looking forward to see what&rsquo;s new. Beware the tacos!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[About Jekyll, Github Pages and Plugins]]></title>
+    <link href="http://gabrielpoca.com/blog/2012/07/08/about_jekyll_and_github_pages_and_plugins/"/>
+    <updated>2012-07-08T00:00:00+01:00</updated>
+    <id>http://gabrielpoca.com/blog/2012/07/08/about_jekyll_and_github_pages_and_plugins</id>
+    <content type="html"><![CDATA[<p>It looks like everyone is talking about jekyll and github pages so I&rsquo;m also going to let my tips around here.</p>
+
+<p>Github pages doesn&rsquo;t allow jekyll pluggins, you may not need them or you may have to find your way around like I did.</p>
+
+<p>I haven&rsquo;t actually found a way around, to use plugins I have to generate my blog before and push it to the repo. The solution is to have a branch with my blog&rsquo;s source files and push the output to the master branch.</p>
+
+<p>I added <em>site</em> to .gitignore and now its magic! I can switch to my source branch, do all the alterations, generate the blog, go back to the master branch and move the files from <em>site</em> to the root folder and push the updated blog.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[MacVim Tab Navigation]]></title>
+    <link href="http://gabrielpoca.com/blog/2012/05/26/macvim-tab-navigation/"/>
+    <updated>2012-05-26T00:00:00+01:00</updated>
+    <id>http://gabrielpoca.com/blog/2012/05/26/macvim-tab-navigation</id>
+    <content type="html"><![CDATA[<p>Very usefull tip I found to get CMD+Number tab navigation in MacVim.</p>
+
+<p>Past the code bellow in vimrc.</p>
+
+<pre><code>if has("gui_macvim")
+    map &amp;ltD-1&amp;gt :tabfirst&amp;ltCr&amp;gt
+    map &amp;ltD-2&amp;gt :tabfirst&amp;ltCr&amp;gtgt
+    map &amp;ltD-3&amp;gt :tabfirst&amp;ltCr&amp;gt3gt
+    map &amp;ltD-4&amp;gt :tabfirst&amp;ltCr&amp;gt4gt
+    map &amp;ltD-5&amp;gt :tabfirst&amp;ltCr&amp;gt5gt
+    map &amp;ltD-6&amp;gt :tabfirst&amp;ltCr&amp;gt6gt
+    map &amp;ltD-7&amp;gt :tabfirst&amp;ltCr&amp;gt7gt
+    map &amp;ltD-8&amp;gt :tabfirst&amp;ltCr&amp;gt8gt
+    map &amp;ltD-9&amp;gt :tabfirst&amp;ltCr&amp;gt9gt
+endif
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Magnet Links and rtorrent]]></title>
+    <link href="http://gabrielpoca.com/blog/2012/04/24/magnet-links-and-rtorrent/"/>
+    <updated>2012-04-24T00:00:00+01:00</updated>
+    <id>http://gabrielpoca.com/blog/2012/04/24/magnet-links-and-rtorrent</id>
+    <content type="html"><![CDATA[<p>There seems to bem some confusion about magnet links in <a href="http://libtorrent.rakshasa.no">rtorrent</a>.</p>
+
+<p>It works without patch, just type the magnetic link directly:</p>
+
+<pre><code>load.normal&gt; magnet:?xt=urn:btih:cf87cc0d6b0db21d2221694effae3758479ad4d1&amp;dn=Dan+Bull+-+Sharing+Is+Caring+%2B+bonus+tracks&amp;tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&amp;tr=udp%3A%2F%2Ftracker.publicbt.com%3A80&amp;tr=udp%3A%2F%2Ftracker.ccc.de%3A80
+</code></pre>
+
+<p>I&rsquo;m now finishing a ruby script to download from piratebay and send to rtorrent.</p>
+
+<p>To install rtorrent with MacPorts just run:</p>
+
+<pre>
+sudo port install libtorrent
+sudo port install rtorrent
+</pre>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[How to install Ubuntu on a MacbookPro]]></title>
+    <link href="http://gabrielpoca.com/blog/2012/04/18/how-to-install-ubuntu-on-a-macbookpro/"/>
+    <updated>2012-04-18T00:00:00+01:00</updated>
+    <id>http://gabrielpoca.com/blog/2012/04/18/how-to-install-ubuntu-on-a-macbookpro</id>
+    <content type="html"><![CDATA[<p>I wrote about my ubuntu installation on my macbook pro a long time ago but I&rsquo;ve never published because I&rsquo;ve never finished it. Here it is now.</p>
+
+<p>I&rsquo;ve been waiting for a while to try a linux installation on my Macbook Pro. I have now a triple boot with Lion, Windows 7 and Ubuntu (actually is Xubunut now).</p>
+
+<!--more-->
+
+
+<p>I&rsquo;ve just tried it and I&rsquo;m probably never using it again, mostly because the battery, which gives about 3 hours on against about 6 on Lion. About Windows 7 I&rsquo;ve installed it a long time ago. So this are the steps I followed:</p>
+
+<ol>
+<li>Install and enable <a href="http://refit.sourceforge.net/">refit</a>.</li>
+<li>Download your Ubuntu image and &ldquo;burn&rdquo; it to usb with <a href="http://unetbootin.sourceforge.net">unetbootin</a>.</li>
+<li>Reboot with the usb inserted, and chose &ldquo;Partition Tools&rdquo; in refit. It will ask to update the partition table, do it. Then it reboots again.</li>
+<li>When it opens again chose to start up from Ubuntu usb (you should see it side with OSX).</li>
+<li>Proceed normally with the installation.</li>
+</ol>
+
+
+<p>You should pay attention if it asks to chose the place to install GRUB. In my installation it didn&rsquo;t ask and everything went well, but in arch linux wiki they talk about related problems. Anyway, just don&rsquo;t replace the MBR. I&rsquo;ll try a different distro later, probably <a href="http://crunchbanglinux.org/">crunch bang</a>.</p>
+
+<p>About the working distro: Everything works fine. The trackpad is odd, or different, it doesn&rsquo;t feel like it is supposed to, but I could get use to it. Also there are some minor issues on the keyboard lights (don&rsquo;t know why but when I tried Xubuntu next it was fixed), but nothing really annoying. Just take a look around this <a href="https://help.ubuntu.com/community/MacBookPro8-2/Oneiric">here</a>, or <a href="https://wiki.ubuntu.com/MactelSupportTeam/CommunityHelpPages">here</a> if you&rsquo;re macbook pro isn&rsquo;t from late 2011.</p>
+
+<p>Besides the battery, the wireless really sucks. There are no official drivers and you get to use ndiswrapper with windows drivers or some strange ones I don&rsquo;t really remember the name right now but are listed in those pages I referred to before. Anyhow you get a weak signal and it heats oddly, a lot.</p>
+
+<p>I could probably live with it, but I found my way around with OSX and I like it now.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Excerpts on Jekyll powered by Github]]></title>
+    <link href="http://gabrielpoca.com/blog/2012/04/15/excerpts-on-jekyll-powered-by-github/"/>
+    <updated>2012-04-15T00:00:00+01:00</updated>
+    <id>http://gabrielpoca.com/blog/2012/04/15/excerpts-on-jekyll-powered-by-github</id>
+    <content type="html"><![CDATA[<p>I&rsquo;m now creating my blog on Github Pages with Jekyll. I was trying to get excerpts on my index page, but Jekyll doesn&rsquo;t allow it and Github pages doesn&rsquo;t allow plugins. Here is a way around.</p>
+
+<p>Just replace in you posts loop</p>
+
+<pre><code>\{\{ post.content \}\}
+</code></pre>
+
+<p>by</p>
+
+<pre><code>\{\{ post.content | replace:'more start - -&gt;','' | replace:'&lt;\!- - more end','' \}\}
+</code></pre>
+
+<p>Now,in your posts, you should put the tag &lt;!&ndash; &ndash; more start &ndash; &ndash;> where the excerpt should end and &lt;!&ndash; &ndash; more end &ndash; &ndash;> in the end of the post. Notice that these are the html&rsquo;s comment tags, I couldn&rsquo;t manage to join the two &ndash;.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Irssi, Bitlbee and Facebook Chat]]></title>
+    <link href="http://gabrielpoca.com/blog/2012/03/22/irssi-bitlbee-facebook-chat/"/>
+    <updated>2012-03-22T00:00:00+00:00</updated>
+    <id>http://gabrielpoca.com/blog/2012/03/22/irssi-bitlbee-facebook-chat</id>
+    <content type="html"><![CDATA[<p>So today I managed to connect <a href="http://www.irssi.org/">Irssi</a> to Facebook Chat through Bitlbee. Irssi is an awesome command line IRC client, I&rsquo;ve set it up on a server and with ssh and screen. Here I explain how to setup irssi and  bitlbee with facebook chat.</p>
+
+<!--more-->
+
+
+<p>Lets get Irssi and Bitlbee.</p>
+
+<pre><code>sudo port install irssi
+sudo port install bitlbee
+</code></pre>
+
+<p>Then configure bitlbee.</p>
+
+<pre><code>cp /opt/local/etc/bitlbee/bitlbee.conf.sample /opt/local/etc/bitlbee/bitlbee.conf
+</code></pre>
+
+<p>Open bitlbee.conf and search/edit to <code>RunMode = ForkDaemon</code>. Now start bittlbee and irssi.</p>
+
+<pre><code>bitlebee
+irssi
+</code></pre>
+
+<p>Right now you&rsquo;re in irssi&rsquo;s console mode. Run the following to get things working. These commands should be easy to understand.</p>
+
+<pre><code>/connect localhost
+account add jabber username@chat.facebook.com password
+</code></pre>
+
+<p>The following renames friend list default names to readable names.</p>
+
+<pre><code>account fb set nick_source full_name
+</code></pre>
+
+<p>Start the chat.</p>
+
+<pre><code>account on
+</code></pre>
+
+<p>And it is done. Now you should learn about irssi. Quick tip to start a conversation:</p>
+
+<pre><code>/query Name
+</code></pre>
+
+<p>To chat in a new window run <code>/window new hide</code> before.
+Bellow is a screenshot of mine.</p>
+
+<p><img src="http://gabrielpoca.com/images/2012/03/captura-de-ecracc83-2012-03-10-acc80s-22-28-47.png" alt="Irssi Screenshot" /></p>
+
+<p>There is plenty of information about irssi. About bitlbee and Facebook here are some useful resources:</p>
+
+<p><a href="http://wiki.bitlbee.org/HowtoFacebook">http://wiki.bitlbee.org/HowtoFacebook</a></p>
+
+<p><a href="https://nowhere.dk/articles/facebook-chat-in-bitlbee">https://nowhere.dk/articles/facebook-chat-in-bitlbee</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Screen Vertical Split]]></title>
+    <link href="http://gabrielpoca.com/blog/2012/03/09/screen-vertical-split/"/>
+    <updated>2012-03-09T00:00:00+00:00</updated>
+    <id>http://gabrielpoca.com/blog/2012/03/09/screen-vertical-split</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve already mention <strong>screen</strong> before and I&rsquo;ve been using it for a while. If you don&rsquo;t know what screen is you should really <a href="http://www.gnu.org/software/screen">google it</a>, it&rsquo;s a great tool for terminal lovers.</p>
+
+<p>I think OSX comes with screen by default since the last major upgrade to the terminal app. The problem with it is that it doesn&rsquo;t allow vertical split, only horizontal.</p>
+
+<!--more-->
+
+
+<p>I searched in ports for something like screen-vs but I couldn&rsquo;t find anything. So I started looking for a manual installation and I got it, here it is:</p>
+
+<pre><code>$ cvs -z3 -d:pserver:anonymous@cvs.savannah.gnu.org:/sources/screen co screen
+$ curl http://old.evanmeagher.net/files/gnu-screen-vertsplit.patch &amp;gt; gnu-screen-vertsplit.patch
+$ cd screen/src
+$ patch &amp;lt; ../../gnu-screen-vertsplit.patch
+$ ./configure --enable-locale --enable-telnet --enable-colors256 --enable-rxct_osc
+$ make
+$ sudo make install
+</code></pre>
+
+<p>After the installation you can hit <strong>C-a |</strong> or run <strong>split -v</strong> in command line mode.</p>
+]]></content>
+  </entry>
+  
+</feed>

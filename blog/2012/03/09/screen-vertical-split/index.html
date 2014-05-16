@@ -1,0 +1,135 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Screen Vertical Split - Wrong Way</title>
+	<meta name="author" content="Gabriel Poça">
+
+	
+	<meta name="description" content="Screen Vertical Split I&rsquo;ve already mention screen before and I&rsquo;ve been using it for a while. If you don&rsquo;t know what screen is you &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Wrong Way" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://gabrielpoca.com/blog/2012/03/09/screen-vertical-split/">
+	<link href="/favicon.ico" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+  <img src="http://www.gravatar.com/avatar/685cd58e0e6dc5b1219027ea22e47d9d?s=160" alt="Profile Picture" style="width: 160px;" />
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		
+		
+		
+			<a class="twitter" href="http://twitter.com/gabrielgpoca" title="Twitter">Twitter</a>
+		
+		
+			<a class="github" href="https://github.com/gabrielpoca" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Screen Vertical Split</h1>
+	<div class="entry-content" itemprop="articleBody"><p>I&rsquo;ve already mention <strong>screen</strong> before and I&rsquo;ve been using it for a while. If you don&rsquo;t know what screen is you should really <a href="http://www.gnu.org/software/screen">google it</a>, it&rsquo;s a great tool for terminal lovers.</p>
+
+<p>I think OSX comes with screen by default since the last major upgrade to the terminal app. The problem with it is that it doesn&rsquo;t allow vertical split, only horizontal.</p>
+
+<!--more-->
+
+
+<p>I searched in ports for something like screen-vs but I couldn&rsquo;t find anything. So I started looking for a manual installation and I got it, here it is:</p>
+
+<pre><code>$ cvs -z3 -d:pserver:anonymous@cvs.savannah.gnu.org:/sources/screen co screen
+$ curl http://old.evanmeagher.net/files/gnu-screen-vertsplit.patch &amp;gt; gnu-screen-vertsplit.patch
+$ cd screen/src
+$ patch &amp;lt; ../../gnu-screen-vertsplit.patch
+$ ./configure --enable-locale --enable-telnet --enable-colors256 --enable-rxct_osc
+$ make
+$ sudo make install
+</code></pre>
+
+<p>After the installation you can hit <strong>C-a |</strong> or run <strong>split -v</strong> in command line mode.</p>
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+
+    Gabriel Poça
+
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+		</div>
+	</div>
+	
+
+</body>
+</html>

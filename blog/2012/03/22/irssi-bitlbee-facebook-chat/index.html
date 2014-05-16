@@ -1,0 +1,169 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Irssi, Bitlbee and Facebook Chat - Wrong Way</title>
+	<meta name="author" content="Gabriel Poça">
+
+	
+	<meta name="description" content="Irssi, Bitlbee and Facebook Chat So today I managed to connect Irssi to Facebook Chat through Bitlbee. Irssi is an awesome command line IRC client, &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Wrong Way" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://gabrielpoca.com/blog/2012/03/22/irssi-bitlbee-facebook-chat/">
+	<link href="/favicon.ico" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+  <img src="http://www.gravatar.com/avatar/685cd58e0e6dc5b1219027ea22e47d9d?s=160" alt="Profile Picture" style="width: 160px;" />
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		
+		
+		
+			<a class="twitter" href="http://twitter.com/gabrielgpoca" title="Twitter">Twitter</a>
+		
+		
+			<a class="github" href="https://github.com/gabrielpoca" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Irssi, Bitlbee and Facebook Chat</h1>
+	<div class="entry-content" itemprop="articleBody"><p>So today I managed to connect <a href="http://www.irssi.org/">Irssi</a> to Facebook Chat through Bitlbee. Irssi is an awesome command line IRC client, I&rsquo;ve set it up on a server and with ssh and screen. Here I explain how to setup irssi and  bitlbee with facebook chat.</p>
+
+<!--more-->
+
+
+<p>Lets get Irssi and Bitlbee.</p>
+
+<pre><code>sudo port install irssi
+sudo port install bitlbee
+</code></pre>
+
+<p>Then configure bitlbee.</p>
+
+<pre><code>cp /opt/local/etc/bitlbee/bitlbee.conf.sample /opt/local/etc/bitlbee/bitlbee.conf
+</code></pre>
+
+<p>Open bitlbee.conf and search/edit to <code>RunMode = ForkDaemon</code>. Now start bittlbee and irssi.</p>
+
+<pre><code>bitlebee
+irssi
+</code></pre>
+
+<p>Right now you&rsquo;re in irssi&rsquo;s console mode. Run the following to get things working. These commands should be easy to understand.</p>
+
+<pre><code>/connect localhost
+account add jabber username@chat.facebook.com password
+</code></pre>
+
+<p>The following renames friend list default names to readable names.</p>
+
+<pre><code>account fb set nick_source full_name
+</code></pre>
+
+<p>Start the chat.</p>
+
+<pre><code>account on
+</code></pre>
+
+<p>And it is done. Now you should learn about irssi. Quick tip to start a conversation:</p>
+
+<pre><code>/query Name
+</code></pre>
+
+<p>To chat in a new window run <code>/window new hide</code> before.
+Bellow is a screenshot of mine.</p>
+
+<p><img src="/images/2012/03/captura-de-ecracc83-2012-03-10-acc80s-22-28-47.png" alt="Irssi Screenshot" /></p>
+
+<p>There is plenty of information about irssi. About bitlbee and Facebook here are some useful resources:</p>
+
+<p><a href="http://wiki.bitlbee.org/HowtoFacebook">http://wiki.bitlbee.org/HowtoFacebook</a></p>
+
+<p><a href="https://nowhere.dk/articles/facebook-chat-in-bitlbee">https://nowhere.dk/articles/facebook-chat-in-bitlbee</a></p>
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+
+    Gabriel Poça
+
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+		</div>
+	</div>
+	
+
+</body>
+</html>
