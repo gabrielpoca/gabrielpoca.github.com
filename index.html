@@ -1,43 +1,42 @@
 
 <!DOCTYPE HTML>
 
-<html>
+  <html>
+    
+    <head>
+      <meta charset="utf-8">
+      <title>Wrong Way</title>
+      <meta name="author" content="Gabriel Poça">
 
-<head>
-	<meta charset="utf-8">
-	<title>Wrong Way</title>
-	<meta name="author" content="Gabriel Poça">
-
-	
-	<meta name="description" content="Dec 3rd, 2013 Playing With Google Apps Script I wrote a google apps script for a spreadsheet.
+      
+      <meta name="description" content="Dec 3rd, 2013 Playing With Google Apps Script I wrote a google apps script for a spreadsheet.
 I&rsquo;ve never done it before and I hope not to to &hellip;">
-	
+      
 
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- http://t.co/dKP3o1e -->
+      <meta name="HandheldFriendly" content="True">
+      <meta name="MobileOptimized" content="320">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link href="/atom.xml" rel="alternate" title="Wrong Way" type="application/atom+xml">
-	
-	<link rel="canonical" href="http://gabrielpoca.com/">
-	<link href="/favicon.ico" rel="shortcut icon">
-	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-	
-  
+      <link href="/atom.xml" rel="alternate" title="Wrong Way" type="application/atom+xml">
+      
+      <link rel="canonical" href="http://gabrielpoca.com/">
+      <link href="/favicon.ico" rel="shortcut icon">
+      <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+      <link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+      <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+      
+      
 
-</head>
+    </head>
 
 
 <body>
-	<div class="container">
-		<div class="left-col">
-			<div class="intrude-less">
-			<header id="header" class="inner"><div class="profilepic">
+  <div class="container">
+    <div class="left-col">
+      <div class="intrude-less">
+        <header id="header" class="inner"><div class="profilepic">
   <img src="http://www.gravatar.com/avatar/685cd58e0e6dc5b1219027ea22e47d9d?s=160" alt="Profile Picture" style="width: 160px;" />
 </div>
 
@@ -75,20 +74,20 @@ I&rsquo;ve never done it before and I hope not to to &hellip;">
 	</div>
 </nav>
 </header>				
-			</div>
-		</div>	
-		<div class="mid-col">
-			
-				
-			
-			<div class="mid-col-container">
-				<div id="content" class="inner">
+      </div>
+    </div>	
+    <div class="mid-col">
+      
+      
+      
+      <div class="mid-col-container">
+        <div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
+<div class="meta">
+  <div class="date">
 
 
 
@@ -101,14 +100,12 @@ I&rsquo;ve never done it before and I hope not to to &hellip;">
 
 
 <time datetime="2013-12-03T00:52:00+00:00" data-updated="true" itemprop="datePublished">Dec 3<span>rd</span>, 2013</time></div>
-		<div class="tags">
-
+  
+  
 </div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/12/03/playing-with-google-apps-script/" itemprop="url">Playing With Google Apps Script</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>I wrote a google apps script for a spreadsheet.
+<h1 class="title" itemprop="name"><a href="/blog/2013/12/03/playing-with-google-apps-script/" itemprop="url">Playing With Google Apps Script</a></h1>
+<div class="entry-content" itemprop="articleBody">
+  <p>I wrote a google apps script for a spreadsheet.
 I&rsquo;ve never done it before and I hope not to to do it again.</p>
 
 <p>The reason I&rsquo;ve wrote it was to automate some tasks on my dad&rsquo;s budget spreadsheet:</p>
@@ -119,17 +116,79 @@ I&rsquo;ve never done it before and I hope not to to do it again.</p>
 </ul>
 
 
+<h2>Insert a row</h2>
 
-		
-		<a href="/blog/2013/12/03/playing-with-google-apps-script/" class="more-link">Read on &rarr;</a>
-	</div>
+<p>I created a template row and made it hidden. Then my function uses it to create
+a new one and place it in the right place. Everything gets copied,
+including the formulas.</p>
+
+<pre><code>function newLine() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getActiveSheet();
+  sheet.insertRowsAfter(10, 1);
+  sheet.getRange("A10:F10").copyTo(sheet.getRange("A11:F11"));
+}
+</code></pre>
+
+<h2>Create a new document</h2>
+
+<p>I created a default document to be used as a template for all budgets.
+Then I need a function to duplicate that document (teaching my dad
+wasn&rsquo;t working).</p>
+
+<pre><code>function newSheet() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getSheetByName('Default')
+  sheet.copyTo(spreadsheet).setName("Novo orçamento");
+}
+</code></pre>
+
+<h2>Wrap it up</h2>
+
+<p>I made both functions available on the top menu, as seen in the image</p>
+
+<p><img src="/images/2013/12/google-apps-print.png" alt="google-apps-pring" /></p>
+
+<p>And the full script</p>
+
+<pre><code>function newLine() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getActiveSheet();
+  sheet.insertRowsAfter(10, 1);
+  sheet.getRange("A10:F10").copyTo(sheet.getRange("A11:F11"));
+}
+
+function newSheet() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getSheetByName('Default')
+  sheet.copyTo(spreadsheet).setName("Novo orçamento");
+}
+
+// The onOpen function is executed automatically every time a Spreadsheet is loaded
+function onOpen() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var menuEntries = [];
+
+  menuEntries.push({name: "Novo orçamento", functionName: "newSheet"});
+  menuEntries.push(null);
+  menuEntries.push({name: "Adicionar novo produto", functionName: "newLine"});
+
+  ss.addMenu("Orçamento", menuEntries);
+}
+</code></pre>
+
+<p>It took a whole morning.</p>
+
+  
+  
+</div>
 
 </article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
+<div class="meta">
+  <div class="date">
 
 
 
@@ -142,61 +201,151 @@ I&rsquo;ve never done it before and I hope not to to do it again.</p>
 
 
 <time datetime="2013-08-10T16:56:00+01:00" data-updated="true" itemprop="datePublished">Aug 10<span>th</span>, 2013</time></div>
-		<div class="tags">
-
+  
+  
 </div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/08/10/jekyll-nginx-capistrano/" itemprop="url">Jekyll, Nginx and Capistrano</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>Yes, I&rsquo;m blogging about blogging again. I&rsquo;ve just updated this blog so I&rsquo;m writing about it. Mostly I will tell you about my jekyll setup.</p>
+<h1 class="title" itemprop="name"><a href="/blog/2013/08/10/jekyll-nginx-capistrano/" itemprop="url">Jekyll, Nginx and Capistrano</a></h1>
+<div class="entry-content" itemprop="articleBody">
+  <p>Yes, I&rsquo;m blogging about blogging again. I&rsquo;ve just updated this blog so I&rsquo;m writing about it. Mostly I will tell you about my jekyll setup.</p>
 
 <p>I&rsquo;m running a <a href="http://nginx.org/">nginx</a> server. I use github to store my code. I&rsquo;ve setup <a href="https://github.com/capistrano/capistrano">capistrano</a> for automatic deploys. Everything else is jekyll.</p>
 
+<p><strong>How it works</strong>: I update my blog. I push to github. I type <code>cap deploy</code>. The code on the server is updated from github. It runs bundle install if needed on the server. It compiles jekyll and it&rsquo;s done.</p>
 
-		
-		<a href="/blog/2013/08/10/jekyll-nginx-capistrano/" class="more-link">Read on &rarr;</a>
-	</div>
+<h2>Theme</h2>
 
-</article>
+<p>I made it from scratch with html and sass (using compass and foundation like I always do). It was easy since I&rsquo;m probably what you can call a web developer. Now I have a simple and organized theme to change when ever I want.</p>
+
+<p>The tricky part was to setup sass. People normally run the <code>compass --watch</code> stuff to compile sass to a folder that jekyll loads. You start compass, you start jekyll and it&rsquo;s fine. You can even use Foreman to make it easier. There are two problems:</p>
+
+<p>To use images in css I had to write they&rsquo;re full path. That&rsquo;s not god. The solution was to make jekyll process css, but since css was generated from sass there were all kind of syntax problems.</p>
+
+<p>My solution was to use <code>gem "jekyll-assets"</code>. It&rsquo;s gives you the same as rails asset pipeline. This solved my problems.</p>
+
+<p>Also I had to put the following code in a file on the plugins folder for sass compiler to load compass. This was a hard to find solution.</p>
+
+<pre><code>Compass.sass_engine_options[:load_paths].each do |path|
+  Sass.load_paths &lt;&lt; path
+end
+</code></pre>
+
+<h2>Tasks</h2>
+
+<p>There is probably only one thing I like in octopress: <strong>Rakefile</strong>. I used some of their code to make my life easy. The rest I got searching or writing myself.</p>
+
+<pre><code>require "rubygems"
+require "bundler/setup"
+
+posts_dir = "_posts"
+
+desc 'Run the jekyll server'
+task :server do
+  system "jekyll serve -w"
+end
+
+desc 'Run the jekyll dev server with drafts'
+task :preview do
+  system "jekyll serve -w --drafts"
+end
+
+namespace :jekyll do
+  desc 'Delete generated _site files'
+  task :clean do
+    system "rm -fR _site"
+  end
+
+  desc 'Clean temporary files and run the server'
+  task :compile =&gt; [:clean] do
+    system "jekyll build"
+  end
+end
 
 
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
+# usage rake new_post[my-new-post] or rake new_post['my new post'] or rake new_post (defaults to "new-post")
+desc "Begin a new post in #{posts_dir}"
+task :new_post, :title do |t, args|
+  if args.title
+    title = args.title
+  else
+    print "Enter a title for your post: "
+    title = STDIN.gets.chomp
+  end
+  mkdir_p "#{posts_dir}"
+  filename = "#{posts_dir}/#{Time.now.strftime('%Y-%m-%d')}-#{title.to_url}.md"
+  if File.exist?(filename)
+    abort("rake aborted!") if ask("#{filename} already exists. Do you want to overwrite?", ['y', 'n']) == 'n'
+  end
+  puts "Creating new post: #{filename}"
+  open(filename, 'w') do |post|
+    post.puts "---"
+    post.puts "layout: post"
+    post.puts "title: \"#{title.gsub(/&amp;/,'&amp;amp;')}\""
+    post.puts "date: #{Time.now.strftime('%Y-%m-%d %H:%M')}"
+    post.puts "---"
+  end
+end
+</code></pre>
 
+<h2>Deploy</h2>
 
+<p>To deploy I just run <code>cap deploy</code>. Everything else <a href="https://github.com/capistrano/capistrano">capistrano</a> takes care of.</p>
 
+<p>I need two gems for this:</p>
 
+<pre><code>gem 'capistrano'
+gem 'rvm-capistrano'
+</code></pre>
 
+<p>And the following code is my <em>deploy.rb</em> file. Notice the <code>require "rvm/capistrano"</code> it is needed if you use rvm.</p>
 
+<pre><code>require "rvm/capistrano"
+require "bundler/capistrano"
 
+set :user, 'USERNAME'
+set :deploy_to, "SERVER FOLDER TO DEPLOY TO"
+set :use_sudo, false
+
+set :application, "APPLICATION NAME"
+server "SERVER_NAME", :app, :web, :db, :primary =&gt; true
+
+ssh_options[:forward_agent] = true
+set :bundle_flags, "--deployment"
+ssh_options[:keys] = %w(PATH TO SSH KEY)
+set :scm, 'git'
+set :repository,  "REPOSITORY URL"
+set :branch, 'master'
+set :deploy_via, :remote_cache
+set :keep_releases, 5
+
+namespace :deploy do
+  [:start, :stop, :restart, :finalize_update].each do |t|
+    desc "#{t} task is a no-op with jekyll"
+    task t, :roles =&gt; :app do ; end
+  end
+
+  # compile compass and then jekyll
+  task :finalize_update do
+    run "cd #{latest_release}; rake jekyll:compile"
+  end
+end
+</code></pre>
+
+<h2>Problems</h2>
+
+<p>So I was using <a href="http://octopress.org/">Octopress</a> for a while. Not that I write that much, but I try to. The problem with octopress is that it is too much. Seriously, it is too much.</p>
+
+<p>Sass compilation time to slow.</p>
 
   
-
-
-<time datetime="2012-08-31T00:00:00+01:00" data-updated="true" itemprop="datePublished">Aug 31<span>st</span>, 2012</time></div>
-		<div class="tags">
-
+  
 </div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2012/08/31/from_vim_to_sublime_text_2/" itemprop="url">From Vim to Sublime Text 2</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>I&rsquo;m addicted to Vim! Or at least I was. You can really get along with vim once you get to know it.
-But sooner or later you&rsquo;ll miss some features. I got to know Sublime Text, so here is a small review.</p>
-
-
-		
-		<a href="/blog/2012/08/31/from_vim_to_sublime_text_2/" class="more-link">Read on &rarr;</a>
-	</div>
 
 </article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
+<div class="meta">
+  <div class="date">
 
 
 
@@ -209,29 +358,27 @@ But sooner or later you&rsquo;ll miss some features. I got to know Sublime Text,
 
 
 <time datetime="2012-08-24T00:00:00+01:00" data-updated="true" itemprop="datePublished">Aug 24<span>th</span>, 2012</time></div>
-		<div class="tags">
-
+  
+  
 </div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2012/08/24/about_codebits_last_year/" itemprop="url">About Codebits Last Year</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>Last year I attended <a href="https://codebits.eu">codebits</a> for the first time. It was amazing! It&rsquo;s the technology conference you shouldn&rsquo;t miss if you&rsquo;re in Portugal.</p>
+<h1 class="title" itemprop="name"><a href="/blog/2012/08/24/about_codebits_last_year/" itemprop="url">About Codebits Last Year</a></h1>
+<div class="entry-content" itemprop="articleBody">
+  <p>Last year I attended <a href="https://codebits.eu">codebits</a> for the first time. It was amazing! It&rsquo;s the technology conference you shouldn&rsquo;t miss if you&rsquo;re in Portugal.</p>
 
 <p>It&rsquo;s not a three days straight in front of a computer wearing smelly clothes. It may seem like, it may also be like it, but it is much more. Just remembering the awesome nyan cat moment. The hunt for badges. Stuff to win. O&#8217;Reilly&rsquo;s book at half the price. Many talks and challenges. And strange people, just how I like it.</p>
 
 <p>I came back with a bag full of shirts and great ideas for the next year. Looking forward to see what&rsquo;s new. Beware the tacos!</p>
 
-		
-		
-	</div>
+  
+  
+</div>
 
 </article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
+<div class="meta">
+  <div class="date">
 
 
 
@@ -244,14 +391,12 @@ But sooner or later you&rsquo;ll miss some features. I got to know Sublime Text,
 
 
 <time datetime="2012-07-08T00:00:00+01:00" data-updated="true" itemprop="datePublished">Jul 8<span>th</span>, 2012</time></div>
-		<div class="tags">
-
+  
+  
 </div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2012/07/08/about_jekyll_and_github_pages_and_plugins/" itemprop="url">About Jekyll, Github Pages and Plugins</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>It looks like everyone is talking about jekyll and github pages so I&rsquo;m also going to let my tips around here.</p>
+<h1 class="title" itemprop="name"><a href="/blog/2012/07/08/about_jekyll_and_github_pages_and_plugins/" itemprop="url">About Jekyll, Github Pages and Plugins</a></h1>
+<div class="entry-content" itemprop="articleBody">
+  <p>It looks like everyone is talking about jekyll and github pages so I&rsquo;m also going to let my tips around here.</p>
 
 <p>Github pages doesn&rsquo;t allow jekyll pluggins, you may not need them or you may have to find your way around like I did.</p>
 
@@ -259,16 +404,16 @@ But sooner or later you&rsquo;ll miss some features. I got to know Sublime Text,
 
 <p>I added <em>site</em> to .gitignore and now its magic! I can switch to my source branch, do all the alterations, generate the blog, go back to the master branch and move the files from <em>site</em> to the root folder and push the updated blog.</p>
 
-		
-		
-	</div>
+  
+  
+</div>
 
 </article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
+<div class="meta">
+  <div class="date">
 
 
 
@@ -281,14 +426,12 @@ But sooner or later you&rsquo;ll miss some features. I got to know Sublime Text,
 
 
 <time datetime="2012-05-26T00:00:00+01:00" data-updated="true" itemprop="datePublished">May 26<span>th</span>, 2012</time></div>
-		<div class="tags">
-
+  
+  
 </div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2012/05/26/macvim-tab-navigation/" itemprop="url">MacVim Tab Navigation</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>Very usefull tip I found to get CMD+Number tab navigation in MacVim.</p>
+<h1 class="title" itemprop="name"><a href="/blog/2012/05/26/macvim-tab-navigation/" itemprop="url">MacVim Tab Navigation</a></h1>
+<div class="entry-content" itemprop="articleBody">
+  <p>Very usefull tip I found to have CMD+Number tab navigation in MacVim.</p>
 
 <p>Past the code bellow in vimrc.</p>
 
@@ -305,16 +448,16 @@ But sooner or later you&rsquo;ll miss some features. I got to know Sublime Text,
 endif
 </code></pre>
 
-		
-		
-	</div>
+  
+  
+</div>
 
 </article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
+<div class="meta">
+  <div class="date">
 
 
 
@@ -327,14 +470,12 @@ endif
 
 
 <time datetime="2012-04-24T00:00:00+01:00" data-updated="true" itemprop="datePublished">Apr 24<span>th</span>, 2012</time></div>
-		<div class="tags">
-
+  
+  
 </div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2012/04/24/magnet-links-and-rtorrent/" itemprop="url">Magnet Links and Rtorrent</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>There seems to bem some confusion about magnet links in <a href="http://libtorrent.rakshasa.no">rtorrent</a>.</p>
+<h1 class="title" itemprop="name"><a href="/blog/2012/04/24/magnet-links-and-rtorrent/" itemprop="url">Magnet Links and Rtorrent</a></h1>
+<div class="entry-content" itemprop="articleBody">
+  <p>There seems to bem some confusion about magnet links in <a href="http://libtorrent.rakshasa.no">rtorrent</a>.</p>
 
 <p>It works without patch, just type the magnetic link directly:</p>
 
@@ -353,16 +494,16 @@ sudo port install rtorrent
 
 
 
-		
-		
-	</div>
+  
+  
+</div>
 
 </article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
+<div class="meta">
+  <div class="date">
 
 
 
@@ -375,71 +516,44 @@ sudo port install rtorrent
 
 
 <time datetime="2012-04-18T00:00:00+01:00" data-updated="true" itemprop="datePublished">Apr 18<span>th</span>, 2012</time></div>
-		<div class="tags">
-
+  
+  
 </div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2012/04/18/how-to-install-ubuntu-on-a-macbookpro/" itemprop="url">How to Install Ubuntu on a MacbookPro</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>I wrote about my ubuntu installation on my macbook pro a long time ago but I&rsquo;ve never published because I&rsquo;ve never finished it. Here it is now.</p>
+<h1 class="title" itemprop="name"><a href="/blog/2012/04/18/how-to-install-ubuntu-on-a-macbookpro/" itemprop="url">How to Install Ubuntu on a MacbookPro</a></h1>
+<div class="entry-content" itemprop="articleBody">
+  <p>I wrote about my ubuntu installation on my macbook pro a long time ago but I&rsquo;ve never published because I&rsquo;ve never finished it. Here it is now.</p>
 
 <p>I&rsquo;ve been waiting for a while to try a linux installation on my Macbook Pro. I have now a triple boot with Lion, Windows 7 and Ubuntu (actually is Xubunut now).</p>
 
+<p>I&rsquo;ve just tried it and I&rsquo;m probably never using it again, mostly because the battery, which gives about 3 hours on against about 6 on Lion. About Windows 7 I&rsquo;ve installed it a long time ago. So this are the steps I followed:</p>
 
-		
-		<a href="/blog/2012/04/18/how-to-install-ubuntu-on-a-macbookpro/" class="more-link">Read on &rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
+<ol>
+<li>Install and enable <a href="http://refit.sourceforge.net/">refit</a>.</li>
+<li>Download your Ubuntu image and &ldquo;burn&rdquo; it to usb with <a href="http://unetbootin.sourceforge.net">unetbootin</a>.</li>
+<li>Reboot with the usb inserted, and chose &ldquo;Partition Tools&rdquo; in refit. It will ask to update the partition table, do it. Then it reboots again.</li>
+<li>When it opens again chose to start up from Ubuntu usb (you should see it side with OSX).</li>
+<li>Proceed normally with the installation.</li>
+</ol>
 
 
+<p>You should pay attention if it asks to chose the place to install GRUB. In my installation it didn&rsquo;t ask and everything went well, but in arch linux wiki they talk about related problems. Anyway, just don&rsquo;t replace the MBR. I&rsquo;ll try a different distro later, probably <a href="http://crunchbanglinux.org/">crunch bang</a>.</p>
 
+<p>About the working distro: Everything works fine. The trackpad is odd, or different, it doesn&rsquo;t feel like it is supposed to, but I could get use to it. Also there are some minor issues on the keyboard lights (don&rsquo;t know why but when I tried Xubuntu next it was fixed), but nothing really annoying. Just take a look around this <a href="https://help.ubuntu.com/community/MacBookPro8-2/Oneiric">here</a>, or <a href="https://wiki.ubuntu.com/MactelSupportTeam/CommunityHelpPages">here</a> if you&rsquo;re macbook pro isn&rsquo;t from late 2011.</p>
 
+<p>Besides the battery, the wireless really sucks. There are no official drivers and you get to use ndiswrapper with windows drivers or some strange ones I don&rsquo;t really remember the name right now but are listed in those pages I referred to before. Anyhow you get a weak signal and it heats oddly, a lot.</p>
 
-
-
+<p>I could probably live with it, but I found my way around with OSX and I like it now.</p>
 
   
-
-
-<time datetime="2012-04-15T00:00:00+01:00" data-updated="true" itemprop="datePublished">Apr 15<span>th</span>, 2012</time></div>
-		<div class="tags">
-
+  
 </div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2012/04/15/excerpts-on-jekyll-powered-by-github/" itemprop="url">Excerpts on Jekyll Powered by Github</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>I&rsquo;m now creating my blog on Github Pages with Jekyll. I was trying to get excerpts on my index page, but Jekyll doesn&rsquo;t allow it and Github pages doesn&rsquo;t allow plugins. Here is a way around.</p>
-
-<p>Just replace in you posts loop</p>
-
-<pre><code>\{\{ post.content \}\}
-</code></pre>
-
-<p>by</p>
-
-<pre><code>\{\{ post.content | replace:'more start - -&gt;','' | replace:'&lt;\!- - more end','' \}\}
-</code></pre>
-
-<p>Now,in your posts, you should put the tag &lt;!&ndash; &ndash; more start &ndash; &ndash;> where the excerpt should end and &lt;!&ndash; &ndash; more end &ndash; &ndash;> in the end of the post. Notice that these are the html&rsquo;s comment tags, I couldn&rsquo;t manage to join the two &ndash;.</p>
-
-		
-		
-	</div>
 
 </article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
+<div class="meta">
+  <div class="date">
 
 
 
@@ -452,19 +566,109 @@ sudo port install rtorrent
 
 
 <time datetime="2012-03-22T00:00:00+00:00" data-updated="true" itemprop="datePublished">Mar 22<span>nd</span>, 2012</time></div>
-		<div class="tags">
-
+  
+  
 </div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2012/03/22/irssi-bitlbee-facebook-chat/" itemprop="url">Irssi, Bitlbee and Facebook Chat</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>So today I managed to connect <a href="http://www.irssi.org/">Irssi</a> to Facebook Chat through Bitlbee. Irssi is an awesome command line IRC client, I&rsquo;ve set it up on a server and with ssh and screen. Here I explain how to setup irssi and  bitlbee with facebook chat.</p>
+<h1 class="title" itemprop="name"><a href="/blog/2012/03/22/irssi-bitlbee-facebook-chat/" itemprop="url">Irssi, Bitlbee and Facebook Chat</a></h1>
+<div class="entry-content" itemprop="articleBody">
+  <p>So today I managed to connect <a href="http://www.irssi.org/">Irssi</a> to Facebook Chat through Bitlbee. Irssi is an awesome command line IRC client, I&rsquo;ve set it up on a server and with ssh and screen. Here I explain how to setup irssi and  bitlbee with facebook chat.</p>
+
+<p>Lets get Irssi and Bitlbee.</p>
+
+<pre><code>sudo port install irssi
+sudo port install bitlbee
+</code></pre>
+
+<p>Then configure bitlbee.</p>
+
+<pre><code>cp /opt/local/etc/bitlbee/bitlbee.conf.sample /opt/local/etc/bitlbee/bitlbee.conf
+</code></pre>
+
+<p>Open bitlbee.conf and search/edit to <code>RunMode = ForkDaemon</code>. Now start bittlbee and irssi.</p>
+
+<pre><code>bitlebee
+irssi
+</code></pre>
+
+<p>Right now you&rsquo;re in irssi&rsquo;s console mode. Run the following to get things working. These commands should be easy to understand.</p>
+
+<pre><code>/connect localhost
+account add jabber username@chat.facebook.com password
+</code></pre>
+
+<p>The following renames friend list default names to readable names.</p>
+
+<pre><code>account fb set nick_source full_name
+</code></pre>
+
+<p>Start the chat.</p>
+
+<pre><code>account on
+</code></pre>
+
+<p>And it is done. Now you should learn about irssi. Quick tip to start a conversation:</p>
+
+<pre><code>/query Name
+</code></pre>
+
+<p>To chat in a new window run <code>/window new hide</code> before.
+Bellow is a screenshot of mine.</p>
+
+<p><img src="/images/2012/03/captura-de-ecracc83-2012-03-10-acc80s-22-28-47.png" alt="Irssi Screenshot" /></p>
+
+<p>There is plenty of information about irssi. About bitlbee and Facebook here are some useful resources:</p>
+
+<p><a href="http://wiki.bitlbee.org/HowtoFacebook">http://wiki.bitlbee.org/HowtoFacebook</a></p>
+
+<p><a href="https://nowhere.dk/articles/facebook-chat-in-bitlbee">https://nowhere.dk/articles/facebook-chat-in-bitlbee</a></p>
+
+  
+  
+</div>
+
+</article>
 
 
-		
-		<a href="/blog/2012/03/22/irssi-bitlbee-facebook-chat/" class="more-link">Read on &rarr;</a>
-	</div>
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="meta">
+  <div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-09T00:00:00+00:00" data-updated="true" itemprop="datePublished">Mar 9<span>th</span>, 2012</time></div>
+  
+  
+</div>
+<h1 class="title" itemprop="name"><a href="/blog/2012/03/09/screen-vertical-split/" itemprop="url">Screen Vertical Split</a></h1>
+<div class="entry-content" itemprop="articleBody">
+  <p>I&rsquo;ve already mention <strong>screen</strong> before and I&rsquo;ve been using it for a while. If you don&rsquo;t know what screen is you should really <a href="http://www.gnu.org/software/screen">google it</a>, it&rsquo;s a great tool for terminal lovers.</p>
+
+<p>I think OSX comes with screen by default since the last major upgrade to the terminal app. The problem with it is that it doesn&rsquo;t allow vertical split, only horizontal.</p>
+
+<p>I searched in ports for something like screen-vs but I couldn&rsquo;t find anything. So I started looking for a manual installation and I got it, here it is:</p>
+
+<pre><code>$ cvs -z3 -d:pserver:anonymous@cvs.savannah.gnu.org:/sources/screen co screen
+$ curl http://old.evanmeagher.net/files/gnu-screen-vertsplit.patch &amp;gt; gnu-screen-vertsplit.patch
+$ cd screen/src
+$ patch &amp;lt; ../../gnu-screen-vertsplit.patch
+$ ./configure --enable-locale --enable-telnet --enable-colors256 --enable-rxct_osc
+$ make
+$ sudo make install
+</code></pre>
+
+<p>After the installation you can hit <strong>C-a |</strong> or run <strong>split -v</strong> in command line mode.</p>
+
+  
+  
+</div>
 
 </article>
 
@@ -472,20 +676,18 @@ sudo port install rtorrent
 <nav id="pagenavi">
     
     
-        <a href="/blog/page/2/" class="next">Next</a>
-    
     <div class="center"><a href="/blog/archives">Blog Archives</a></div>
 </nav></div>
-			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2014
+      </div>
+      <footer id="footer" class="inner">Copyright &copy; 2014
 
     Gabriel Poça
 
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
-		</div>
-	</div>
-	
+    </div>
+  </div>
+  
 
 </body>
 </html>

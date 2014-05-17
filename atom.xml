@@ -4,7 +4,7 @@
   <title><![CDATA[Wrong Way]]></title>
   <link href="http://gabrielpoca.com/atom.xml" rel="self"/>
   <link href="http://gabrielpoca.com/"/>
-  <updated>2014-05-16T15:39:52+01:00</updated>
+  <updated>2014-05-17T15:21:39+01:00</updated>
   <id>http://gabrielpoca.com/</id>
   <author>
     <name><![CDATA[Gabriel Poça]]></name>
@@ -27,9 +27,6 @@ I&rsquo;ve never done it before and I hope not to to do it again.</p>
 <li>Create a new row in a given place with a given formula.</li>
 <li>Duplicate a document used as template.</li>
 </ul>
-
-
-<!-- more -->
 
 
 <h2>Insert a row</h2>
@@ -105,9 +102,6 @@ function onOpen() {
     <content type="html"><![CDATA[<p>Yes, I&rsquo;m blogging about blogging again. I&rsquo;ve just updated this blog so I&rsquo;m writing about it. Mostly I will tell you about my jekyll setup.</p>
 
 <p>I&rsquo;m running a <a href="http://nginx.org/">nginx</a> server. I use github to store my code. I&rsquo;ve setup <a href="https://github.com/capistrano/capistrano">capistrano</a> for automatic deploys. Everything else is jekyll.</p>
-
-<!--more-->
-
 
 <p><strong>How it works</strong>: I update my blog. I push to github. I type <code>cap deploy</code>. The code on the server is updated from github. It runs bundle install if needed on the server. It compiles jekyll and it&rsquo;s done.</p>
 
@@ -238,78 +232,6 @@ end
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[From Vim to Sublime Text 2]]></title>
-    <link href="http://gabrielpoca.com/blog/2012/08/31/from_vim_to_sublime_text_2/"/>
-    <updated>2012-08-31T00:00:00+01:00</updated>
-    <id>http://gabrielpoca.com/blog/2012/08/31/from_vim_to_sublime_text_2</id>
-    <content type="html"><![CDATA[<p>I&rsquo;m addicted to Vim! Or at least I was. You can really get along with vim once you get to know it.
-But sooner or later you&rsquo;ll miss some features. I got to know Sublime Text, so here is a small review.</p>
-
-<!--more-->
-
-
-<p>Things I love about vim:
-* You can do everything with the keyboard and there are shortcuts for everything.
-* Lots of plugins.
-* Very customizable.
-* Geeky.</p>
-
-<p>Things I miss in Vim:</p>
-
-<ul>
-<li>Sidebar with features for files and folders (rename, drag and drop, etc).</li>
-<li>Better mouse support.</li>
-<li>Tabs.</li>
-</ul>
-
-
-<p>I could live with this, but why should I? Developing in rails I have lots of files and folders. This was my deadline, I needed a sidebar and tabs. I tried TextMate and Sublime Text. I still use vim, for editing single files in the console, but that is all.</p>
-
-<table style="margin: 1em 0 1em 0;">
-    <tr>
-        <td>
-            <div style="margin: 1.5em 1em 1.5em 1em;">
-                <img style="max-width:150px;" src="http://gabrielpoca.com/images/2012/09/sublime_text_icon.png" />
-            </div>
-        </td>
-        <td>
-            <div>
-                Why Sublime Text? Why not TextMate? I don&#8217;t like it, I liked the old interface, before it became open source. Now it has some nice new features, but I just don&#8217;t like the new interface. It&#8217;s a matter of taste. Besides, Sublime has <strong>support for TextMate bundles and themes</strong>. Also, it&#8217;s <strong>cross platform</strong>.
-            </div>
-        </td>
-    </tr>
-</table>
-
-
-<p>So, here are my tips and tricks to customize Sublime Text.</p>
-
-<h3>Install the Package Control</h3>
-
-<p><a href="http://wbond.net/sublime_packages/package_control">Package Control</a> allows you to install/remove packages from GitHub without leaving Sublime. This is where most of the magic happens.</p>
-
-<h3>Enable Vintage Mode</h3>
-
-<p>With <a href="http://www.sublimetext.com/docs/2/vintage.html">Vintage Mode</a> you get some vim features, like edit/visual/insert mode and w, b, e, c-w, c-d shortcuts and more. Replace <code>"ignored_packages": ["Vintage"]</code> to <code>"ignored_packages": []</code> in settings.</p>
-
-<h3>Change Line Padding</h3>
-
-<p>Add <code>"line_padding_bottom": -1</code> to settings.</p>
-
-<h3>Install Themes</h3>
-
-<p>Install <a href="https://github.com/netatoo/phoenix-theme">phoenix-theme</a>, it has sidebar icons. The best I found so far.</p>
-
-<h3>Shortcuts</h3>
-
-<p>Besides the Vintage Mode shortcuts, knowing the shortcuts is very useful. <a href="https://gist.github.com/1207002">Here</a>.</p>
-
-<h2>In The End</h2>
-
-<p>Enjoy. And let go of Vim, at leat for big stuff, it is holding you down.</p>
-]]></content>
-  </entry>
-  
-  <entry>
     <title type="html"><![CDATA[About Codebits Last Year]]></title>
     <link href="http://gabrielpoca.com/blog/2012/08/24/about_codebits_last_year/"/>
     <updated>2012-08-24T00:00:00+01:00</updated>
@@ -342,7 +264,7 @@ But sooner or later you&rsquo;ll miss some features. I got to know Sublime Text,
     <link href="http://gabrielpoca.com/blog/2012/05/26/macvim-tab-navigation/"/>
     <updated>2012-05-26T00:00:00+01:00</updated>
     <id>http://gabrielpoca.com/blog/2012/05/26/macvim-tab-navigation</id>
-    <content type="html"><![CDATA[<p>Very usefull tip I found to get CMD+Number tab navigation in MacVim.</p>
+    <content type="html"><![CDATA[<p>Very usefull tip I found to have CMD+Number tab navigation in MacVim.</p>
 
 <p>Past the code bellow in vimrc.</p>
 
@@ -396,9 +318,6 @@ sudo port install rtorrent
 
 <p>I&rsquo;ve been waiting for a while to try a linux installation on my Macbook Pro. I have now a triple boot with Lion, Windows 7 and Ubuntu (actually is Xubunut now).</p>
 
-<!--more-->
-
-
 <p>I&rsquo;ve just tried it and I&rsquo;m probably never using it again, mostly because the battery, which gives about 3 hours on against about 6 on Lion. About Windows 7 I&rsquo;ve installed it a long time ago. So this are the steps I followed:</p>
 
 <ol>
@@ -421,35 +340,11 @@ sudo port install rtorrent
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Excerpts on Jekyll powered by Github]]></title>
-    <link href="http://gabrielpoca.com/blog/2012/04/15/excerpts-on-jekyll-powered-by-github/"/>
-    <updated>2012-04-15T00:00:00+01:00</updated>
-    <id>http://gabrielpoca.com/blog/2012/04/15/excerpts-on-jekyll-powered-by-github</id>
-    <content type="html"><![CDATA[<p>I&rsquo;m now creating my blog on Github Pages with Jekyll. I was trying to get excerpts on my index page, but Jekyll doesn&rsquo;t allow it and Github pages doesn&rsquo;t allow plugins. Here is a way around.</p>
-
-<p>Just replace in you posts loop</p>
-
-<pre><code>\{\{ post.content \}\}
-</code></pre>
-
-<p>by</p>
-
-<pre><code>\{\{ post.content | replace:'more start - -&gt;','' | replace:'&lt;\!- - more end','' \}\}
-</code></pre>
-
-<p>Now,in your posts, you should put the tag &lt;!&ndash; &ndash; more start &ndash; &ndash;> where the excerpt should end and &lt;!&ndash; &ndash; more end &ndash; &ndash;> in the end of the post. Notice that these are the html&rsquo;s comment tags, I couldn&rsquo;t manage to join the two &ndash;.</p>
-]]></content>
-  </entry>
-  
-  <entry>
     <title type="html"><![CDATA[Irssi, Bitlbee and Facebook Chat]]></title>
     <link href="http://gabrielpoca.com/blog/2012/03/22/irssi-bitlbee-facebook-chat/"/>
     <updated>2012-03-22T00:00:00+00:00</updated>
     <id>http://gabrielpoca.com/blog/2012/03/22/irssi-bitlbee-facebook-chat</id>
     <content type="html"><![CDATA[<p>So today I managed to connect <a href="http://www.irssi.org/">Irssi</a> to Facebook Chat through Bitlbee. Irssi is an awesome command line IRC client, I&rsquo;ve set it up on a server and with ssh and screen. Here I explain how to setup irssi and  bitlbee with facebook chat.</p>
-
-<!--more-->
-
 
 <p>Lets get Irssi and Bitlbee.</p>
 
@@ -510,9 +405,6 @@ Bellow is a screenshot of mine.</p>
     <content type="html"><![CDATA[<p>I&rsquo;ve already mention <strong>screen</strong> before and I&rsquo;ve been using it for a while. If you don&rsquo;t know what screen is you should really <a href="http://www.gnu.org/software/screen">google it</a>, it&rsquo;s a great tool for terminal lovers.</p>
 
 <p>I think OSX comes with screen by default since the last major upgrade to the terminal app. The problem with it is that it doesn&rsquo;t allow vertical split, only horizontal.</p>
-
-<!--more-->
-
 
 <p>I searched in ports for something like screen-vs but I couldn&rsquo;t find anything. So I started looking for a manual installation and I got it, here it is:</p>
 
