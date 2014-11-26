@@ -9,7 +9,7 @@
       <meta name="author" content="Gabriel Poça">
 
       
-      <meta name="description" content="Jun 4th, 2014 Dipping the Toes in Phonegap This blog post was written for Group Buddies Blog. Like most developers I know, there is a list of things &hellip;">
+      <meta name="description" content="Nov 26th, 2014 Comments Offline Web Apps With Meteor This blog post was written for Group Buddies Blog. In this blog post I&rsquo;m presenting a &hellip;">
       
 
       <!-- http://t.co/dKP3o1e -->
@@ -27,6 +27,18 @@
       <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
       
       
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', '82577395']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
 
     </head>
 
@@ -98,8 +110,485 @@
   
 
 
+<time datetime="2014-11-26T22:18:55+00:00" data-updated="true" itemprop="datePublished">Nov 26<span>th</span>, 2014</time></div>
+  
+  
+  <span class="comments"><a href="/blog/2014/11/26/offline-web-apps-with-meteor/#disqus_thread">Comments</a></span>
+  
+</div>
+<h1 class="title" itemprop="name"><a href="/blog/2014/11/26/offline-web-apps-with-meteor/" itemprop="url">Offline Web Apps With Meteor</a></h1>
+<div class="entry-content" itemprop="articleBody">
+  <p>This blog post was written for <a href="http://blog.groupbuddies.com/posts/45-offline-web-apps-with-meteor">Group Buddies Blog</a>.</p>
+
+<p>In this blog post I&rsquo;m presenting a solution to make Meteor apps work completely offline. In fact, Meteor apps already work offline, as long as the user doesn&rsquo;t close the browser.</p>
+
+<p>If you don&rsquo;t know what Meteor is or how it works, I recommend that you take a look at the <a href="http://docs.meteor.com/#/basic/">meteor docs</a> before moving forward.</p>
+
+<p>One of the principles of Meteor is &ldquo;Data on the Wire&rdquo;, i.e., each client receives all assets upon connection, after which only data is sent between the client and the server.</p>
+
+<p>Another principle is &ldquo;Database Everywhere&rdquo;, i.e., each client has a subset of the server database that responds to the same operations with the same api.</p>
+
+<p>When offline, a client has everything needed to keep the app running. This article focuses on how to allow a user to reopen the application, while being offline, after the browser has been closed.</p>
+
+<h1>Persisting assets</h1>
+
+<p>HTML5 made some progress in allowing web applications to be accessible offline. The result of it is the ApplicationCache interface. Since many people don&rsquo;t know, or understand, <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache">AppCache</a>, here&rsquo;s how it is defined in MDN (Mozilla Developer Network).</p>
+
+<blockquote><p>Developers can use the Application Cache (AppCache) interface to specify resources that the browser should cache and make available to offline users. Applications that are cached load and work correctly even if users click the refresh button when they are offline.</p></blockquote>
+
+<p>AppCache stores all the application assets and allows a user to open them when there is no internet connection. For more details on AppCache I recommend <a href="http://www.html5rocks.com/en/tutorials/appcache/beginner/">this guide</a>.</p>
+
+<p>To start using AppCache on a Meteor application just add the package:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>meteor add appcache</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Don&rsquo;t worry if the console logs say the app has more that 5 MB ( which is the recommended maximum). When Meteor builds for production it concatenates and minifies the assets. If it&rsquo;s still more that 5 MB maybe you need to exclude some assets from AppCache.</p>
+
+<p>For instance, you can tell AppCache not to save an image:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Meteor.AppCache.config
+</span><span class='line'>  onlineOnly: [
+</span><span class='line'>    '/bg.png'
+</span><span class='line'>    ]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <a href="https://github.com/meteor/meteor/wiki/AppCache">documentation</a> is a good follow up on this topic.</p>
+
+<h1>Persisting data</h1>
+
+<p>The client side database is in-memory. When offline, Meteor will store both the current working database and a list of messages to send to the server on reconnect. There is no (official) way to persist this data to disk, and for this reason the information is lost when the browser is closed.</p>
+
+<p>To overcome this limitation, there is <a href="https://github.com/GroundMeteor/db">GroundDB</a>, a fast and thin layer providing Meteor with offline database and methods, saving them into the <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage#localStorage"><code>localStorage</code></a>.</p>
+
+<p>To start using GroundDB add the package.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>meteor add ground:db</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now your subscriptions will be available when you&rsquo;re offline. If you&rsquo;re using IronRouter you should not use the <code>waitOn</code> feature, since this is going to make the application hold until the server responds. Instead, subscribe to the data you want offline on the application startup. For instance, in the file <code>lib/router.coffee</code> you can have something like the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>if Meteor.isClient
+</span><span class='line'>  subscribed = false
+</span><span class='line'>  Tracker.autorun () -&gt;
+</span><span class='line'>    if Meteor.user() && !subscribed
+</span><span class='line'>      Meteor.subscribe 'users'
+</span><span class='line'>      Meteor.subscribe 'trips'
+</span><span class='line'>      Meteor.subscribe 'expenses'
+</span><span class='line'>      Meteor.subscribe 'notifications'
+</span><span class='line'>      subscribed = true</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This way the data will always be on <code>localStorage</code> when the user goes offline. This also means that you need to care about the amount of information that you save locally.</p>
+
+<p>If you are interested in this topic, this <a href="https://groups.google.com/forum/#!searchin/meteor-talk/minimongo$20offline/meteor-talk/tGto0cCsvXA/dH3uZjEd9y4J">google groups thread</a> is a good follow up.</p>
+
+<h1>Summary</h1>
+
+<p>Making an offline web application requires a different ways of thinking about a solution, and there are many plenty problems to solve. These packages help pushing forward on making offline web applications. Feel free to ask questions, I&rsquo;m not an expert but I&rsquo;ll try my best to answer.</p>
+
+<p>As an example, you can run <a href="https://github.com/groupbuddies/tripl.it.git">tripl.it</a> and see it&rsquo;s source code. It&rsquo;s a mobile application that works offline.</p>
+
+  
+  
+</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="meta">
+  <div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-24T00:00:00+01:00" data-updated="true" itemprop="datePublished">Jun 24<span>th</span>, 2014</time></div>
+  
+  
+  <span class="comments"><a href="/blog/2014/06/24/streaming-microphone-from-browser-to-nodejs-no-plugin/#disqus_thread">Comments</a></span>
+  
+</div>
+<h1 class="title" itemprop="name"><a href="/blog/2014/06/24/streaming-microphone-from-browser-to-nodejs-no-plugin/" itemprop="url">Tutorial: HTML Audio Capture Streaming to Node.js (No Browser Extensions)</a></h1>
+<div class="entry-content" itemprop="articleBody">
+  <p>This blog post was written for <a href="http://blog.groupbuddies.com/posts/39-tutorial-html-audio-capture-streaming-to-node-js-no-browser-extensions">Group Buddies Blog</a>.</p>
+
+<p>I&rsquo;m taking the time to write the tutorial I wish I had some months ago. My task was to set up some user voice recording mechanism in the browser. It should record for about one hour, non-stop, saving to a server. The idea was to use the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Navigator.getUserMedia">getUserMedia()</a> API. No browser extensions should be used.</p>
+
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/API/Navigator.getUserMedia">getUserMedia()</a> API allows web apps to request access to a media device such as a camera or microphone. It yields raw PCM data.</p>
+
+<h2>Round One</h2>
+
+<p>We approached the task looking for the smallest change that solved the problem. We did it using <a href="https://github.com/muaz-khan/WebRTC-Experiment/tree/master/RecordRTC">RecordRTC</a>. It records the microphone in the browser. When finished, we can upload it to a server through a normal request. Let me show you how it works.</p>
+
+<p>Add the RecordRTC library.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//www.WebRTC-Experiment.com/RecordRTC.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Request access to the microphone.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">session</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">audio</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">video</span><span class="o">:</span> <span class="kc">false</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">recordRTC</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'><span class="nx">navigator</span><span class="p">.</span><span class="nx">getUserMedia</span><span class="p">(</span><span class="nx">session</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">mediaStream</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">recordRTC</span> <span class="o">=</span> <span class="nx">RecordRTC</span><span class="p">(</span><span class="nx">MediaStream</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">recordRTC</span><span class="p">.</span><span class="nx">startRecording</span><span class="p">();</span>
+</span><span class='line'><span class="p">},</span> <span class="nx">onError</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When finished recording, stop and upload to a server.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">recordRTC</span><span class="p">.</span><span class="nx">stopRecording</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">audioURL</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">formData</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FormData</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">formData</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s1">&#39;edition[audio]&#39;</span><span class="p">,</span> <span class="nx">recordRTC</span><span class="p">.</span><span class="nx">getBlob</span><span class="p">())</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;some/path&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">data</span><span class="o">:</span> <span class="nx">formData</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">contentType</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">cache</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">processData</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="p">})</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code works, but you shouldn&rsquo;t write code like this, it&rsquo;s just an example.</p>
+
+<h3>Drawbacks</h3>
+
+<p>Audio is recorded in wav format. An one hour recording, with one channel, can take around 500mb. This is a problem for the browser limited memory. Also the upload would take ages! It wasn&rsquo;t working.</p>
+
+<h2>Round Two</h2>
+
+<p>After reading the source code from <a href="https://github.com/muaz-khan/WebRTC-Experiment/tree/master/RecordRTC">RecordRTC</a> (ugly) and <a href="https://github.com/mattdiamond/Recorderjs">RecorderJS</a>, I realised that using a <a href="https://developer.mozilla.org/en-US/docs/Web/API/ScriptProcessorNode">ScriptProcessorNode</a> I can write JavaScript to send data chunks (audio samples) from the microphone to a server.</p>
+
+<p>Turns out it&rsquo;s harder than it seems, mostly because of the lack of information. There are a couple of related Stack Overflow answers (I will add them in the end), but I won&rsquo;t bother you with this. Let&rsquo;s move on to the code.</p>
+
+<h3>Reading data from the microphone</h3>
+
+<p>First request microphone access.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">session</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">audio</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">video</span><span class="o">:</span> <span class="kc">false</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">recordRTC</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'><span class="nx">navigator</span><span class="p">.</span><span class="nx">getUserMedia</span><span class="p">(</span><span class="nx">session</span><span class="p">,</span> <span class="nx">initializeRecorder</span><span class="p">,</span> <span class="nx">onError</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Having the microphone stream you can use the <a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext">AudioContext</a> interface to make the audio (PCM data) go through different processing nodes before reaching its destination. There are nodes for gain, compressor, panner, and much more. We are going to write a custom node, so we can access the audio samples. For that we add a <a href="https://developer.mozilla.org/en-US/docs/Web/API/ScriptProcessorNode">ScriptProcessorNode</a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">initializeRecorder</span><span class="p">(</span><span class="nx">stream</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">audioContext</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">AudioContext</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">context</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">audioContext</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">audioInput</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">createMediaStreamSource</span><span class="p">(</span><span class="nx">stream</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">bufferSize</span> <span class="o">=</span> <span class="mi">2048</span><span class="p">;</span>
+</span><span class='line'>  <span class="c1">// create a javascript node</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">recorder</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">createJavaScriptNode</span><span class="p">(</span><span class="nx">bufferSize</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">// specify the processing function</span>
+</span><span class='line'>  <span class="nx">recorder</span><span class="p">.</span><span class="nx">onaudioprocess</span> <span class="o">=</span> <span class="nx">recorderProcess</span><span class="p">;</span>
+</span><span class='line'>  <span class="c1">// connect stream to our recorder</span>
+</span><span class='line'>  <span class="nx">audioInput</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">recorder</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">// connect our recorder to the previous destination</span>
+</span><span class='line'>  <span class="nx">recorder</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">destination</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After this, every audio sample will go through the <code>recorderProcess</code> function.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">recorderProcess</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">left</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">inputBuffer</span><span class="p">.</span><span class="nx">getChannelData</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We have now PCM data samples from the left channel. Since we are recording in mono we only need the left channel. Now moving on to streaming these chunks to the server.</p>
+
+<h3>Communication</h3>
+
+<p>We are using WebSockets to send the samples to the server. The server is going to be written in Node.js.</p>
+
+<p>I started with <a href="http://socket.io/">Socket.IO</a>. When things didn&rsquo;t work I realised Socket.IO doesn&rsquo;t support binary communication (in fact, it does now, I made this before it did). <a href="http://binaryjs.com/">BinaryJS</a> does support binary communication, so I moved to it.</p>
+
+<h4>Setup BinaryJS</h4>
+
+<p>First add the BinaryJS library.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://cdn.binaryjs.com/0/binary.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now start a connection.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BinaryClient</span><span class="p">(</span><span class="s1">&#39;ws://localhost:9001&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When ready, create a write stream.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// for the sake of this example let&#39;s put the stream in the window</span>
+</span><span class='line'>  <span class="nb">window</span><span class="p">.</span><span class="nx">Stream</span> <span class="o">=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">createStream</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Going back to our custom node let&rsquo;s send the audio to the stream.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">recorderProcess</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">left</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">inputBuffer</span><span class="p">.</span><span class="nx">getChannelData</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">window</span><span class="p">.</span><span class="nx">Stream</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">left</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Everything should be ready on the client side now. Our <code>recorderProcess</code> function is called for each audio chunk, and each is sent to the server.</p>
+
+<p>But we aren&rsquo;t ready yet! There is one important step missing. WebAudio samples are in Float32. If you choose to send them like this you need to know that <a href="https://developer.mozilla.org/en-US/docs/Web/API/Uint16Array">endianness does matter</a>. I chose to convert them to 16 bit signed integers:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">convertFloat32ToInt16</span><span class="p">(</span><span class="nx">buffer</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">l</span> <span class="o">=</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Int16Array</span><span class="p">(</span><span class="nx">l</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">while</span> <span class="p">(</span><span class="nx">l</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">buf</span><span class="p">[</span><span class="nx">l</span><span class="p">]</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">buffer</span><span class="p">[</span><span class="nx">l</span><span class="p">])</span><span class="o">*</span><span class="mh">0x7FFF</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">buf</span><span class="p">.</span><span class="nx">buffer</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">recorderProcess</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">left</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">inputBuffer</span><span class="p">.</span><span class="nx">getChannelData</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">window</span><span class="p">.</span><span class="nx">Stream</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">convertFloat32ToInt16</span><span class="p">(</span><span class="nx">left</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We are now done with the client code. Moving on to the server.</p>
+
+<h3>Setting up a server</h3>
+
+<p>I&rsquo;m not getting into much detail on the server, I&rsquo;m just going to show how to put these chunks in a playable media file. I&rsquo;m assuming you already have <a href="http://nodejs.org/">Node.js</a> installed.</p>
+
+<p>We need <a href="http://binaryjs.com/">BinaryJS</a>, and <a href="https://github.com/TooTallNate/node-wav">node-wav</a> on the server. The first is for communication, and the second accepts raw audio data and outputs a WAV file with a valid WAVE header.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>npm init
+</span><span class='line'>npm install binaryjs
+</span><span class='line'>npm install wav
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now create the <code>index.js</code> file and start the BinaryJS server.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">binaryServer</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;binaryjs&#39;</span><span class="p">).</span><span class="nx">BinaryServer</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">wav</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;wav&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">binaryServer</span><span class="p">({</span><span class="nx">port</span><span class="o">:</span> <span class="mi">9001</span><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">server</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;connection&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">client</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="p">...</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Inside the <code>server.on('connection', function)</code> callback node-wav is going to help pipe the stream into a file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">fileWriter</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;stream&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">stream</span><span class="p">,</span> <span class="nx">meta</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">fileWriter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">wav</span><span class="p">.</span><span class="nx">FileWriter</span><span class="p">(</span><span class="s1">&#39;demo.wav&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">channels</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">sampleRate</span><span class="o">:</span> <span class="mi">48000</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">bitDepth</span><span class="o">:</span> <span class="mi">16</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>  <span class="nx">stream</span><span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">fileWriter</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">stream</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">fileWriter</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;close&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nx">fileWriter</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">fileWriter</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For a better understanding you should read <a href="https://github.com/TooTallNate/node-wav">node-wav</a> document. In fact, you should read the source code since there isn&rsquo;t much documentation. Simply put, <code>wav.FileWriter</code> accepts a pcm stream and sends it to a media file, setting the right header for the file.</p>
+
+<p>Notice the settings for <code>wav.FileWriter</code> are hardcoded, but they can be sent through the stream. Parameters like sample rate change for each client.</p>
+
+<h2>Setup complete</h2>
+
+<p>You are ready to start recording. There is still a long way to go from here. You should probably support restoring the connection if it goes down, and append the audio to the same media.</p>
+
+<h1>Wrap it up</h1>
+
+<p>You can now start from here and build your own platform with audio recording. Maybe a personal note-taking platform.</p>
+
+<p>This solution allows you to record the microphone while not worrying about upload time and audio loss. The full source code is <a href="https://github.com/gabrielpoca/browser-pcm-stream">here</a>. Feel free to leave any questions and comments.</p>
+
+<h3>StackOverflow related answers</h3>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/21079972/sound-card-detection-for-web/21080953#21080953">Sound card detection for web</a></li>
+<li><a href="http://stackoverflow.com/questions/20876152/playing-pcm-stream-from-web-audio-api-on-node-js">Playing PCM stream from Web Audio API on Node.js</a></li>
+<li><a href="http://stackoverflow.com/questions/20850396/stream-recorded-audio-from-browser-to-server">Stream recorded audio from browser to server</a></li>
+</ul>
+
+
+  
+  
+</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="meta">
+  <div class="date">
+
+
+
+
+
+
+
+
+  
+
+
 <time datetime="2014-06-04T00:07:39+01:00" data-updated="true" itemprop="datePublished">Jun 4<span>th</span>, 2014</time></div>
   
+  
+  <span class="comments"><a href="/blog/2014/06/04/dipping-the-toes-in-phonegap/#disqus_thread">Comments</a></span>
   
 </div>
 <h1 class="title" itemprop="name"><a href="/blog/2014/06/04/dipping-the-toes-in-phonegap/" itemprop="url">Dipping the Toes in Phonegap</a></h1>
@@ -246,37 +735,10 @@
   
 
 
-<time datetime="2014-05-11T16:45:30+01:00" data-updated="true" itemprop="datePublished">May 11<span>th</span>, 2014</time></div>
-  
-  
-</div>
-<h1 class="title" itemprop="name"><a href="/blog/2014/05/11/streaming-microphone-from-browser-to-nodejs-no-plugin/" itemprop="url">Streaming Microphone From Browser to Nodejs (No Plugin)</a></h1>
-<div class="entry-content" itemprop="articleBody">
-  
-
-  
-  
-</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-<div class="meta">
-  <div class="date">
-
-
-
-
-
-
-
-
-  
-
-
 <time datetime="2013-12-03T00:52:00+00:00" data-updated="true" itemprop="datePublished">Dec 3<span>rd</span>, 2013</time></div>
   
+  
+  <span class="comments"><a href="/blog/2013/12/03/playing-with-google-apps-script/#disqus_thread">Comments</a></span>
   
 </div>
 <h1 class="title" itemprop="name"><a href="/blog/2013/12/03/playing-with-google-apps-script/" itemprop="url">Playing With Google Apps Script</a></h1>
@@ -298,13 +760,20 @@ I&rsquo;ve never done it before and I hope not to to do it again.</p>
 a new one and place it in the right place. Everything gets copied,
 including the formulas.</p>
 
-<pre><code>function newLine() {
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = spreadsheet.getActiveSheet();
-  sheet.insertRowsAfter(10, 1);
-  sheet.getRange("A10:F10").copyTo(sheet.getRange("A11:F11"));
-}
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">newLine</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">spreadsheet</span> <span class="o">=</span> <span class="nx">SpreadsheetApp</span><span class="p">.</span><span class="nx">getActiveSpreadsheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">sheet</span> <span class="o">=</span> <span class="nx">spreadsheet</span><span class="p">.</span><span class="nx">getActiveSheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">sheet</span><span class="p">.</span><span class="nx">insertRowsAfter</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">sheet</span><span class="p">.</span><span class="nx">getRange</span><span class="p">(</span><span class="s2">&quot;A10:F10&quot;</span><span class="p">).</span><span class="nx">copyTo</span><span class="p">(</span><span class="nx">sheet</span><span class="p">.</span><span class="nx">getRange</span><span class="p">(</span><span class="s2">&quot;A11:F11&quot;</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Create a new document</h2>
 
@@ -312,12 +781,18 @@ including the formulas.</p>
 Then I need a function to duplicate that document (teaching my dad
 wasn&rsquo;t working).</p>
 
-<pre><code>function newSheet() {
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = spreadsheet.getSheetByName('Default')
-  sheet.copyTo(spreadsheet).setName("Novo orçamento");
-}
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">newSheet</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">spreadsheet</span> <span class="o">=</span> <span class="nx">SpreadsheetApp</span><span class="p">.</span><span class="nx">getActiveSpreadsheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">sheet</span> <span class="o">=</span> <span class="nx">spreadsheet</span><span class="p">.</span><span class="nx">getSheetByName</span><span class="p">(</span><span class="s1">&#39;Default&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nx">sheet</span><span class="p">.</span><span class="nx">copyTo</span><span class="p">(</span><span class="nx">spreadsheet</span><span class="p">).</span><span class="nx">setName</span><span class="p">(</span><span class="s2">&quot;Novo orçamento&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Wrap it up</h2>
 
@@ -327,31 +802,54 @@ wasn&rsquo;t working).</p>
 
 <p>And the full script</p>
 
-<pre><code>function newLine() {
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = spreadsheet.getActiveSheet();
-  sheet.insertRowsAfter(10, 1);
-  sheet.getRange("A10:F10").copyTo(sheet.getRange("A11:F11"));
-}
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">newLine</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">spreadsheet</span> <span class="o">=</span> <span class="nx">SpreadsheetApp</span><span class="p">.</span><span class="nx">getActiveSpreadsheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">sheet</span> <span class="o">=</span> <span class="nx">spreadsheet</span><span class="p">.</span><span class="nx">getActiveSheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">sheet</span><span class="p">.</span><span class="nx">insertRowsAfter</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">sheet</span><span class="p">.</span><span class="nx">getRange</span><span class="p">(</span><span class="s2">&quot;A10:F10&quot;</span><span class="p">).</span><span class="nx">copyTo</span><span class="p">(</span><span class="nx">sheet</span><span class="p">.</span><span class="nx">getRange</span><span class="p">(</span><span class="s2">&quot;A11:F11&quot;</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">newSheet</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">spreadsheet</span> <span class="o">=</span> <span class="nx">SpreadsheetApp</span><span class="p">.</span><span class="nx">getActiveSpreadsheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">sheet</span> <span class="o">=</span> <span class="nx">spreadsheet</span><span class="p">.</span><span class="nx">getSheetByName</span><span class="p">(</span><span class="s1">&#39;Default&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nx">sheet</span><span class="p">.</span><span class="nx">copyTo</span><span class="p">(</span><span class="nx">spreadsheet</span><span class="p">).</span><span class="nx">setName</span><span class="p">(</span><span class="s2">&quot;Novo orçamento&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// The onOpen function is executed automatically every time a Spreadsheet is loaded</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">onOpen</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ss</span> <span class="o">=</span> <span class="nx">SpreadsheetApp</span><span class="p">.</span><span class="nx">getActiveSpreadsheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">menuEntries</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">menuEntries</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Novo orçamento&quot;</span><span class="p">,</span> <span class="nx">functionName</span><span class="o">:</span> <span class="s2">&quot;newSheet&quot;</span><span class="p">});</span>
+</span><span class='line'>  <span class="nx">menuEntries</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">menuEntries</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Adicionar novo produto&quot;</span><span class="p">,</span> <span class="nx">functionName</span><span class="o">:</span> <span class="s2">&quot;newLine&quot;</span><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">ss</span><span class="p">.</span><span class="nx">addMenu</span><span class="p">(</span><span class="s2">&quot;Orçamento&quot;</span><span class="p">,</span> <span class="nx">menuEntries</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-function newSheet() {
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = spreadsheet.getSheetByName('Default')
-  sheet.copyTo(spreadsheet).setName("Novo orçamento");
-}
-
-// The onOpen function is executed automatically every time a Spreadsheet is loaded
-function onOpen() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var menuEntries = [];
-
-  menuEntries.push({name: "Novo orçamento", functionName: "newSheet"});
-  menuEntries.push(null);
-  menuEntries.push({name: "Adicionar novo produto", functionName: "newLine"});
-
-  ss.addMenu("Orçamento", menuEntries);
-}
-</code></pre>
 
 <p>It took a whole morning.</p>
 
@@ -379,6 +877,8 @@ function onOpen() {
 <time datetime="2013-08-10T16:56:00+01:00" data-updated="true" itemprop="datePublished">Aug 10<span>th</span>, 2013</time></div>
   
   
+  <span class="comments"><a href="/blog/2013/08/10/jekyll-nginx-capistrano/#disqus_thread">Comments</a></span>
+  
 </div>
 <h1 class="title" itemprop="name"><a href="/blog/2013/08/10/jekyll-nginx-capistrano/" itemprop="url">Jekyll, Nginx and Capistrano</a></h1>
 <div class="entry-content" itemprop="articleBody">
@@ -400,67 +900,123 @@ function onOpen() {
 
 <p>Also I had to put the following code in a file on the plugins folder for sass compiler to load compass. This was a hard to find solution.</p>
 
-<pre><code>Compass.sass_engine_options[:load_paths].each do |path|
-  Sass.load_paths &lt;&lt; path
-end
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Compass</span><span class="o">.</span><span class="n">sass_engine_options</span><span class="o">[</span><span class="ss">:load_paths</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">path</span><span class="o">|</span>
+</span><span class='line'>  <span class="no">Sass</span><span class="o">.</span><span class="n">load_paths</span> <span class="o">&lt;&lt;</span> <span class="n">path</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Tasks</h2>
 
 <p>There is probably only one thing I like in octopress: <strong>Rakefile</strong>. I used some of their code to make my life easy. The rest I got searching or writing myself.</p>
 
-<pre><code>require "rubygems"
-require "bundler/setup"
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;rubygems&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;bundler/setup&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">posts_dir</span> <span class="o">=</span> <span class="s2">&quot;_posts&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">desc</span> <span class="s1">&#39;Run the jekyll server&#39;</span>
+</span><span class='line'><span class="n">task</span> <span class="ss">:server</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nb">system</span> <span class="s2">&quot;jekyll serve -w&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">desc</span> <span class="s1">&#39;Run the jekyll dev server with drafts&#39;</span>
+</span><span class='line'><span class="n">task</span> <span class="ss">:preview</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nb">system</span> <span class="s2">&quot;jekyll serve -w --drafts&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">namespace</span> <span class="ss">:jekyll</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">desc</span> <span class="s1">&#39;Delete generated _site files&#39;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:clean</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">system</span> <span class="s2">&quot;rm -fR _site&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">desc</span> <span class="s1">&#39;Clean temporary files and run the server&#39;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:compile</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:clean</span><span class="o">]</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">system</span> <span class="s2">&quot;jekyll build&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># usage rake new_post[my-new-post] or rake new_post[&#39;my new post&#39;] or rake new_post (defaults to &quot;new-post&quot;)</span>
+</span><span class='line'><span class="n">desc</span> <span class="s2">&quot;Begin a new post in </span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="n">task</span> <span class="ss">:new_post</span><span class="p">,</span> <span class="ss">:title</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="p">,</span> <span class="n">args</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">title</span>
+</span><span class='line'>    <span class="n">title</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">title</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="nb">print</span> <span class="s2">&quot;Enter a title for your post: &quot;</span>
+</span><span class='line'>    <span class="n">title</span> <span class="o">=</span> <span class="no">STDIN</span><span class="o">.</span><span class="n">gets</span><span class="o">.</span><span class="n">chomp</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="n">mkdir_p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="n">title</span><span class="o">.</span><span class="n">to_url</span><span class="si">}</span><span class="s2">.md&quot;</span>
+</span><span class='line'>  <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">abort</span><span class="p">(</span><span class="s2">&quot;rake aborted!&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">ask</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> already exists. Do you want to overwrite?&quot;</span><span class="p">,</span> <span class="o">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="o">]</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Creating new post: </span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">post</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;---&quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;layout: post&quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;title: </span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">title</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/&amp;/</span><span class="p">,</span><span class="s1">&#39;&amp;amp;&#39;</span><span class="p">)</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;date: </span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;---&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
-posts_dir = "_posts"
-
-desc 'Run the jekyll server'
-task :server do
-  system "jekyll serve -w"
-end
-
-desc 'Run the jekyll dev server with drafts'
-task :preview do
-  system "jekyll serve -w --drafts"
-end
-
-namespace :jekyll do
-  desc 'Delete generated _site files'
-  task :clean do
-    system "rm -fR _site"
-  end
-
-  desc 'Clean temporary files and run the server'
-  task :compile =&gt; [:clean] do
-    system "jekyll build"
-  end
-end
-
-
-# usage rake new_post[my-new-post] or rake new_post['my new post'] or rake new_post (defaults to "new-post")
-desc "Begin a new post in #{posts_dir}"
-task :new_post, :title do |t, args|
-  if args.title
-    title = args.title
-  else
-    print "Enter a title for your post: "
-    title = STDIN.gets.chomp
-  end
-  mkdir_p "#{posts_dir}"
-  filename = "#{posts_dir}/#{Time.now.strftime('%Y-%m-%d')}-#{title.to_url}.md"
-  if File.exist?(filename)
-    abort("rake aborted!") if ask("#{filename} already exists. Do you want to overwrite?", ['y', 'n']) == 'n'
-  end
-  puts "Creating new post: #{filename}"
-  open(filename, 'w') do |post|
-    post.puts "---"
-    post.puts "layout: post"
-    post.puts "title: \"#{title.gsub(/&amp;/,'&amp;amp;')}\""
-    post.puts "date: #{Time.now.strftime('%Y-%m-%d %H:%M')}"
-    post.puts "---"
-  end
-end
-</code></pre>
 
 <h2>Deploy</h2>
 
@@ -468,43 +1024,77 @@ end
 
 <p>I need two gems for this:</p>
 
-<pre><code>gem 'capistrano'
-gem 'rvm-capistrano'
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;capistrano&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;rvm-capistrano&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>And the following code is my <em>deploy.rb</em> file. Notice the <code>require "rvm/capistrano"</code> it is needed if you use rvm.</p>
 
-<pre><code>require "rvm/capistrano"
-require "bundler/capistrano"
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;rvm/capistrano&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;bundler/capistrano&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">set</span> <span class="ss">:user</span><span class="p">,</span> <span class="s1">&#39;USERNAME&#39;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:deploy_to</span><span class="p">,</span> <span class="s2">&quot;SERVER FOLDER TO DEPLOY TO&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:use_sudo</span><span class="p">,</span> <span class="kp">false</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">set</span> <span class="ss">:application</span><span class="p">,</span> <span class="s2">&quot;APPLICATION NAME&quot;</span>
+</span><span class='line'><span class="n">server</span> <span class="s2">&quot;SERVER_NAME&quot;</span><span class="p">,</span> <span class="ss">:app</span><span class="p">,</span> <span class="ss">:web</span><span class="p">,</span> <span class="ss">:db</span><span class="p">,</span> <span class="ss">:primary</span> <span class="o">=&gt;</span> <span class="kp">true</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ssh_options</span><span class="o">[</span><span class="ss">:forward_agent</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:bundle_flags</span><span class="p">,</span> <span class="s2">&quot;--deployment&quot;</span>
+</span><span class='line'><span class="n">ssh_options</span><span class="o">[</span><span class="ss">:keys</span><span class="o">]</span> <span class="o">=</span> <span class="sx">%w(PATH TO SSH KEY)</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:scm</span><span class="p">,</span> <span class="s1">&#39;git&#39;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:repository</span><span class="p">,</span>  <span class="s2">&quot;REPOSITORY URL&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:branch</span><span class="p">,</span> <span class="s1">&#39;master&#39;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:deploy_via</span><span class="p">,</span> <span class="ss">:remote_cache</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:keep_releases</span><span class="p">,</span> <span class="mi">5</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">namespace</span> <span class="ss">:deploy</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">[</span><span class="ss">:start</span><span class="p">,</span> <span class="ss">:stop</span><span class="p">,</span> <span class="ss">:restart</span><span class="p">,</span> <span class="ss">:finalize_update</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">desc</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">t</span><span class="si">}</span><span class="s2"> task is a no-op with jekyll&quot;</span>
+</span><span class='line'>    <span class="n">task</span> <span class="n">t</span><span class="p">,</span> <span class="ss">:roles</span> <span class="o">=&gt;</span> <span class="ss">:app</span> <span class="k">do</span> <span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># compile compass and then jekyll</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:finalize_update</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">run</span> <span class="s2">&quot;cd </span><span class="si">#{</span><span class="n">latest_release</span><span class="si">}</span><span class="s2">; rake jekyll:compile&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
-set :user, 'USERNAME'
-set :deploy_to, "SERVER FOLDER TO DEPLOY TO"
-set :use_sudo, false
-
-set :application, "APPLICATION NAME"
-server "SERVER_NAME", :app, :web, :db, :primary =&gt; true
-
-ssh_options[:forward_agent] = true
-set :bundle_flags, "--deployment"
-ssh_options[:keys] = %w(PATH TO SSH KEY)
-set :scm, 'git'
-set :repository,  "REPOSITORY URL"
-set :branch, 'master'
-set :deploy_via, :remote_cache
-set :keep_releases, 5
-
-namespace :deploy do
-  [:start, :stop, :restart, :finalize_update].each do |t|
-    desc "#{t} task is a no-op with jekyll"
-    task t, :roles =&gt; :app do ; end
-  end
-
-  # compile compass and then jekyll
-  task :finalize_update do
-    run "cd #{latest_release}; rake jekyll:compile"
-  end
-end
-</code></pre>
 
 <h2>Problems</h2>
 
@@ -535,6 +1125,8 @@ end
 
 <time datetime="2012-08-24T00:00:00+01:00" data-updated="true" itemprop="datePublished">Aug 24<span>th</span>, 2012</time></div>
   
+  
+  <span class="comments"><a href="/blog/2012/08/24/about_codebits_last_year/#disqus_thread">Comments</a></span>
   
 </div>
 <h1 class="title" itemprop="name"><a href="/blog/2012/08/24/about_codebits_last_year/" itemprop="url">About Codebits Last Year</a></h1>
@@ -568,6 +1160,8 @@ end
 
 <time datetime="2012-07-08T00:00:00+01:00" data-updated="true" itemprop="datePublished">Jul 8<span>th</span>, 2012</time></div>
   
+  
+  <span class="comments"><a href="/blog/2012/07/08/about_jekyll_and_github_pages_and_plugins/#disqus_thread">Comments</a></span>
   
 </div>
 <h1 class="title" itemprop="name"><a href="/blog/2012/07/08/about_jekyll_and_github_pages_and_plugins/" itemprop="url">About Jekyll, Github Pages and Plugins</a></h1>
@@ -603,6 +1197,8 @@ end
 
 <time datetime="2012-05-26T00:00:00+01:00" data-updated="true" itemprop="datePublished">May 26<span>th</span>, 2012</time></div>
   
+  
+  <span class="comments"><a href="/blog/2012/05/26/macvim-tab-navigation/#disqus_thread">Comments</a></span>
   
 </div>
 <h1 class="title" itemprop="name"><a href="/blog/2012/05/26/macvim-tab-navigation/" itemprop="url">MacVim Tab Navigation</a></h1>
@@ -647,6 +1243,8 @@ endif
 
 <time datetime="2012-04-24T00:00:00+01:00" data-updated="true" itemprop="datePublished">Apr 24<span>th</span>, 2012</time></div>
   
+  
+  <span class="comments"><a href="/blog/2012/04/24/magnet-links-and-rtorrent/#disqus_thread">Comments</a></span>
   
 </div>
 <h1 class="title" itemprop="name"><a href="/blog/2012/04/24/magnet-links-and-rtorrent/" itemprop="url">Magnet Links and Rtorrent</a></h1>
@@ -694,6 +1292,8 @@ sudo port install rtorrent
 <time datetime="2012-04-18T00:00:00+01:00" data-updated="true" itemprop="datePublished">Apr 18<span>th</span>, 2012</time></div>
   
   
+  <span class="comments"><a href="/blog/2012/04/18/how-to-install-ubuntu-on-a-macbookpro/#disqus_thread">Comments</a></span>
+  
 </div>
 <h1 class="title" itemprop="name"><a href="/blog/2012/04/18/how-to-install-ubuntu-on-a-macbookpro/" itemprop="url">How to Install Ubuntu on a MacbookPro</a></h1>
 <div class="entry-content" itemprop="articleBody">
@@ -719,84 +1319,6 @@ sudo port install rtorrent
 <p>Besides the battery, the wireless really sucks. There are no official drivers and you get to use ndiswrapper with windows drivers or some strange ones I don&rsquo;t really remember the name right now but are listed in those pages I referred to before. Anyhow you get a weak signal and it heats oddly, a lot.</p>
 
 <p>I could probably live with it, but I found my way around with OSX and I like it now.</p>
-
-  
-  
-</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-<div class="meta">
-  <div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-03-22T00:00:00+00:00" data-updated="true" itemprop="datePublished">Mar 22<span>nd</span>, 2012</time></div>
-  
-  
-</div>
-<h1 class="title" itemprop="name"><a href="/blog/2012/03/22/irssi-bitlbee-facebook-chat/" itemprop="url">Irssi, Bitlbee and Facebook Chat</a></h1>
-<div class="entry-content" itemprop="articleBody">
-  <p>So today I managed to connect <a href="http://www.irssi.org/">Irssi</a> to Facebook Chat through Bitlbee. Irssi is an awesome command line IRC client, I&rsquo;ve set it up on a server and with ssh and screen. Here I explain how to setup irssi and  bitlbee with facebook chat.</p>
-
-<p>Lets get Irssi and Bitlbee.</p>
-
-<pre><code>sudo port install irssi
-sudo port install bitlbee
-</code></pre>
-
-<p>Then configure bitlbee.</p>
-
-<pre><code>cp /opt/local/etc/bitlbee/bitlbee.conf.sample /opt/local/etc/bitlbee/bitlbee.conf
-</code></pre>
-
-<p>Open bitlbee.conf and search/edit to <code>RunMode = ForkDaemon</code>. Now start bittlbee and irssi.</p>
-
-<pre><code>bitlebee
-irssi
-</code></pre>
-
-<p>Right now you&rsquo;re in irssi&rsquo;s console mode. Run the following to get things working. These commands should be easy to understand.</p>
-
-<pre><code>/connect localhost
-account add jabber username@chat.facebook.com password
-</code></pre>
-
-<p>The following renames friend list default names to readable names.</p>
-
-<pre><code>account fb set nick_source full_name
-</code></pre>
-
-<p>Start the chat.</p>
-
-<pre><code>account on
-</code></pre>
-
-<p>And it is done. Now you should learn about irssi. Quick tip to start a conversation:</p>
-
-<pre><code>/query Name
-</code></pre>
-
-<p>To chat in a new window run <code>/window new hide</code> before.
-Bellow is a screenshot of mine.</p>
-
-<p><img src="/images/2012/03/captura-de-ecracc83-2012-03-10-acc80s-22-28-47.png" alt="Irssi Screenshot" /></p>
-
-<p>There is plenty of information about irssi. About bitlbee and Facebook here are some useful resources:</p>
-
-<p><a href="http://wiki.bitlbee.org/HowtoFacebook">http://wiki.bitlbee.org/HowtoFacebook</a></p>
-
-<p><a href="https://nowhere.dk/articles/facebook-chat-in-bitlbee">https://nowhere.dk/articles/facebook-chat-in-bitlbee</a></p>
 
   
   

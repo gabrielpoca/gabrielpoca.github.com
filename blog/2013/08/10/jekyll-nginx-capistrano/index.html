@@ -113,67 +113,123 @@ Yes, I&rsquo;m blogging about blogging again. I&rsquo;ve just updated this blog 
 
 <p>Also I had to put the following code in a file on the plugins folder for sass compiler to load compass. This was a hard to find solution.</p>
 
-<pre><code>Compass.sass_engine_options[:load_paths].each do |path|
-  Sass.load_paths &lt;&lt; path
-end
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Compass</span><span class="o">.</span><span class="n">sass_engine_options</span><span class="o">[</span><span class="ss">:load_paths</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">path</span><span class="o">|</span>
+</span><span class='line'>  <span class="no">Sass</span><span class="o">.</span><span class="n">load_paths</span> <span class="o">&lt;&lt;</span> <span class="n">path</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Tasks</h2>
 
 <p>There is probably only one thing I like in octopress: <strong>Rakefile</strong>. I used some of their code to make my life easy. The rest I got searching or writing myself.</p>
 
-<pre><code>require "rubygems"
-require "bundler/setup"
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;rubygems&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;bundler/setup&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">posts_dir</span> <span class="o">=</span> <span class="s2">&quot;_posts&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">desc</span> <span class="s1">&#39;Run the jekyll server&#39;</span>
+</span><span class='line'><span class="n">task</span> <span class="ss">:server</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nb">system</span> <span class="s2">&quot;jekyll serve -w&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">desc</span> <span class="s1">&#39;Run the jekyll dev server with drafts&#39;</span>
+</span><span class='line'><span class="n">task</span> <span class="ss">:preview</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nb">system</span> <span class="s2">&quot;jekyll serve -w --drafts&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">namespace</span> <span class="ss">:jekyll</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">desc</span> <span class="s1">&#39;Delete generated _site files&#39;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:clean</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">system</span> <span class="s2">&quot;rm -fR _site&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">desc</span> <span class="s1">&#39;Clean temporary files and run the server&#39;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:compile</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:clean</span><span class="o">]</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">system</span> <span class="s2">&quot;jekyll build&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># usage rake new_post[my-new-post] or rake new_post[&#39;my new post&#39;] or rake new_post (defaults to &quot;new-post&quot;)</span>
+</span><span class='line'><span class="n">desc</span> <span class="s2">&quot;Begin a new post in </span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="n">task</span> <span class="ss">:new_post</span><span class="p">,</span> <span class="ss">:title</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="p">,</span> <span class="n">args</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">title</span>
+</span><span class='line'>    <span class="n">title</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">title</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="nb">print</span> <span class="s2">&quot;Enter a title for your post: &quot;</span>
+</span><span class='line'>    <span class="n">title</span> <span class="o">=</span> <span class="no">STDIN</span><span class="o">.</span><span class="n">gets</span><span class="o">.</span><span class="n">chomp</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="n">mkdir_p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="n">title</span><span class="o">.</span><span class="n">to_url</span><span class="si">}</span><span class="s2">.md&quot;</span>
+</span><span class='line'>  <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">abort</span><span class="p">(</span><span class="s2">&quot;rake aborted!&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">ask</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> already exists. Do you want to overwrite?&quot;</span><span class="p">,</span> <span class="o">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="o">]</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Creating new post: </span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">post</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;---&quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;layout: post&quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;title: </span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">title</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/&amp;/</span><span class="p">,</span><span class="s1">&#39;&amp;amp;&#39;</span><span class="p">)</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;date: </span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;---&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
-posts_dir = "_posts"
-
-desc 'Run the jekyll server'
-task :server do
-  system "jekyll serve -w"
-end
-
-desc 'Run the jekyll dev server with drafts'
-task :preview do
-  system "jekyll serve -w --drafts"
-end
-
-namespace :jekyll do
-  desc 'Delete generated _site files'
-  task :clean do
-    system "rm -fR _site"
-  end
-
-  desc 'Clean temporary files and run the server'
-  task :compile =&gt; [:clean] do
-    system "jekyll build"
-  end
-end
-
-
-# usage rake new_post[my-new-post] or rake new_post['my new post'] or rake new_post (defaults to "new-post")
-desc "Begin a new post in #{posts_dir}"
-task :new_post, :title do |t, args|
-  if args.title
-    title = args.title
-  else
-    print "Enter a title for your post: "
-    title = STDIN.gets.chomp
-  end
-  mkdir_p "#{posts_dir}"
-  filename = "#{posts_dir}/#{Time.now.strftime('%Y-%m-%d')}-#{title.to_url}.md"
-  if File.exist?(filename)
-    abort("rake aborted!") if ask("#{filename} already exists. Do you want to overwrite?", ['y', 'n']) == 'n'
-  end
-  puts "Creating new post: #{filename}"
-  open(filename, 'w') do |post|
-    post.puts "---"
-    post.puts "layout: post"
-    post.puts "title: \"#{title.gsub(/&amp;/,'&amp;amp;')}\""
-    post.puts "date: #{Time.now.strftime('%Y-%m-%d %H:%M')}"
-    post.puts "---"
-  end
-end
-</code></pre>
 
 <h2>Deploy</h2>
 
@@ -181,43 +237,77 @@ end
 
 <p>I need two gems for this:</p>
 
-<pre><code>gem 'capistrano'
-gem 'rvm-capistrano'
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;capistrano&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;rvm-capistrano&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>And the following code is my <em>deploy.rb</em> file. Notice the <code>require "rvm/capistrano"</code> it is needed if you use rvm.</p>
 
-<pre><code>require "rvm/capistrano"
-require "bundler/capistrano"
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;rvm/capistrano&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;bundler/capistrano&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">set</span> <span class="ss">:user</span><span class="p">,</span> <span class="s1">&#39;USERNAME&#39;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:deploy_to</span><span class="p">,</span> <span class="s2">&quot;SERVER FOLDER TO DEPLOY TO&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:use_sudo</span><span class="p">,</span> <span class="kp">false</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">set</span> <span class="ss">:application</span><span class="p">,</span> <span class="s2">&quot;APPLICATION NAME&quot;</span>
+</span><span class='line'><span class="n">server</span> <span class="s2">&quot;SERVER_NAME&quot;</span><span class="p">,</span> <span class="ss">:app</span><span class="p">,</span> <span class="ss">:web</span><span class="p">,</span> <span class="ss">:db</span><span class="p">,</span> <span class="ss">:primary</span> <span class="o">=&gt;</span> <span class="kp">true</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ssh_options</span><span class="o">[</span><span class="ss">:forward_agent</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:bundle_flags</span><span class="p">,</span> <span class="s2">&quot;--deployment&quot;</span>
+</span><span class='line'><span class="n">ssh_options</span><span class="o">[</span><span class="ss">:keys</span><span class="o">]</span> <span class="o">=</span> <span class="sx">%w(PATH TO SSH KEY)</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:scm</span><span class="p">,</span> <span class="s1">&#39;git&#39;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:repository</span><span class="p">,</span>  <span class="s2">&quot;REPOSITORY URL&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:branch</span><span class="p">,</span> <span class="s1">&#39;master&#39;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:deploy_via</span><span class="p">,</span> <span class="ss">:remote_cache</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:keep_releases</span><span class="p">,</span> <span class="mi">5</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">namespace</span> <span class="ss">:deploy</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">[</span><span class="ss">:start</span><span class="p">,</span> <span class="ss">:stop</span><span class="p">,</span> <span class="ss">:restart</span><span class="p">,</span> <span class="ss">:finalize_update</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">desc</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">t</span><span class="si">}</span><span class="s2"> task is a no-op with jekyll&quot;</span>
+</span><span class='line'>    <span class="n">task</span> <span class="n">t</span><span class="p">,</span> <span class="ss">:roles</span> <span class="o">=&gt;</span> <span class="ss">:app</span> <span class="k">do</span> <span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># compile compass and then jekyll</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:finalize_update</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">run</span> <span class="s2">&quot;cd </span><span class="si">#{</span><span class="n">latest_release</span><span class="si">}</span><span class="s2">; rake jekyll:compile&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
-set :user, 'USERNAME'
-set :deploy_to, "SERVER FOLDER TO DEPLOY TO"
-set :use_sudo, false
-
-set :application, "APPLICATION NAME"
-server "SERVER_NAME", :app, :web, :db, :primary =&gt; true
-
-ssh_options[:forward_agent] = true
-set :bundle_flags, "--deployment"
-ssh_options[:keys] = %w(PATH TO SSH KEY)
-set :scm, 'git'
-set :repository,  "REPOSITORY URL"
-set :branch, 'master'
-set :deploy_via, :remote_cache
-set :keep_releases, 5
-
-namespace :deploy do
-  [:start, :stop, :restart, :finalize_update].each do |t|
-    desc "#{t} task is a no-op with jekyll"
-    task t, :roles =&gt; :app do ; end
-  end
-
-  # compile compass and then jekyll
-  task :finalize_update do
-    run "cd #{latest_release}; rake jekyll:compile"
-  end
-end
-</code></pre>
 
 <h2>Problems</h2>
 

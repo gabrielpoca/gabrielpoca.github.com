@@ -1,0 +1,219 @@
+
+<!DOCTYPE HTML>
+
+  <html>
+    
+    <head>
+      <meta charset="utf-8">
+      <title>Offline Web Apps with Meteor - Wrong Way</title>
+      <meta name="author" content="Gabriel Poça">
+
+      
+      <meta name="description" content="Offline Web Apps With Meteor
+This blog post was written for Group Buddies Blog. In this blog post I&rsquo;m presenting a solution to make Meteor &hellip;">
+      
+
+      <!-- http://t.co/dKP3o1e -->
+      <meta name="HandheldFriendly" content="True">
+      <meta name="MobileOptimized" content="320">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <link href="/atom.xml" rel="alternate" title="Wrong Way" type="application/atom+xml">
+      
+      <link rel="canonical" href="http://gabrielpoca.com/blog/2014/11/26/offline-web-apps-with-meteor/">
+      <link href="/favicon.ico" rel="shortcut icon">
+      <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+      <link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+      <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+      
+      
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', '82577395']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+    </head>
+
+
+<body>
+  <div class="container">
+    <div class="left-col">
+      <div class="intrude-less">
+        <header id="header" class="inner"><div class="profilepic">
+  <img src="http://www.gravatar.com/avatar/685cd58e0e6dc5b1219027ea22e47d9d?s=160" alt="Profile Picture" style="width: 160px;" />
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		
+		
+		
+			<a class="twitter" href="http://twitter.com/gabrielgpoca" title="Twitter">Twitter</a>
+		
+		
+			<a class="github" href="https://github.com/gabrielpoca" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+      </div>
+    </div>	
+    <div class="mid-col">
+      
+      
+      
+      <div class="mid-col-container">
+        <div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<h1 class="title" itemprop="name">Offline Web Apps With Meteor</h1>
+<div class="entry-content" itemprop="articleBody"><p>This blog post was written for <a href="http://blog.groupbuddies.com/posts/45-offline-web-apps-with-meteor">Group Buddies Blog</a>.</p>
+
+<p>In this blog post I&rsquo;m presenting a solution to make Meteor apps work completely offline. In fact, Meteor apps already work offline, as long as the user doesn&rsquo;t close the browser.</p>
+
+<p>If you don&rsquo;t know what Meteor is or how it works, I recommend that you take a look at the <a href="http://docs.meteor.com/#/basic/">meteor docs</a> before moving forward.</p>
+
+<p>One of the principles of Meteor is &ldquo;Data on the Wire&rdquo;, i.e., each client receives all assets upon connection, after which only data is sent between the client and the server.</p>
+
+<p>Another principle is &ldquo;Database Everywhere&rdquo;, i.e., each client has a subset of the server database that responds to the same operations with the same api.</p>
+
+<p>When offline, a client has everything needed to keep the app running. This article focuses on how to allow a user to reopen the application, while being offline, after the browser has been closed.</p>
+
+<h1>Persisting assets</h1>
+
+<p>HTML5 made some progress in allowing web applications to be accessible offline. The result of it is the ApplicationCache interface. Since many people don&rsquo;t know, or understand, <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache">AppCache</a>, here&rsquo;s how it is defined in MDN (Mozilla Developer Network).</p>
+
+<blockquote><p>Developers can use the Application Cache (AppCache) interface to specify resources that the browser should cache and make available to offline users. Applications that are cached load and work correctly even if users click the refresh button when they are offline.</p></blockquote>
+
+<p>AppCache stores all the application assets and allows a user to open them when there is no internet connection. For more details on AppCache I recommend <a href="http://www.html5rocks.com/en/tutorials/appcache/beginner/">this guide</a>.</p>
+
+<p>To start using AppCache on a Meteor application just add the package:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>meteor add appcache</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Don&rsquo;t worry if the console logs say the app has more that 5 MB ( which is the recommended maximum). When Meteor builds for production it concatenates and minifies the assets. If it&rsquo;s still more that 5 MB maybe you need to exclude some assets from AppCache.</p>
+
+<p>For instance, you can tell AppCache not to save an image:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Meteor.AppCache.config
+</span><span class='line'>  onlineOnly: [
+</span><span class='line'>    '/bg.png'
+</span><span class='line'>    ]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <a href="https://github.com/meteor/meteor/wiki/AppCache">documentation</a> is a good follow up on this topic.</p>
+
+<h1>Persisting data</h1>
+
+<p>The client side database is in-memory. When offline, Meteor will store both the current working database and a list of messages to send to the server on reconnect. There is no (official) way to persist this data to disk, and for this reason the information is lost when the browser is closed.</p>
+
+<p>To overcome this limitation, there is <a href="https://github.com/GroundMeteor/db">GroundDB</a>, a fast and thin layer providing Meteor with offline database and methods, saving them into the <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage#localStorage"><code>localStorage</code></a>.</p>
+
+<p>To start using GroundDB add the package.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>meteor add ground:db</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now your subscriptions will be available when you&rsquo;re offline. If you&rsquo;re using IronRouter you should not use the <code>waitOn</code> feature, since this is going to make the application hold until the server responds. Instead, subscribe to the data you want offline on the application startup. For instance, in the file <code>lib/router.coffee</code> you can have something like the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>if Meteor.isClient
+</span><span class='line'>  subscribed = false
+</span><span class='line'>  Tracker.autorun () -&gt;
+</span><span class='line'>    if Meteor.user() && !subscribed
+</span><span class='line'>      Meteor.subscribe 'users'
+</span><span class='line'>      Meteor.subscribe 'trips'
+</span><span class='line'>      Meteor.subscribe 'expenses'
+</span><span class='line'>      Meteor.subscribe 'notifications'
+</span><span class='line'>      subscribed = true</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This way the data will always be on <code>localStorage</code> when the user goes offline. This also means that you need to care about the amount of information that you save locally.</p>
+
+<p>If you are interested in this topic, this <a href="https://groups.google.com/forum/#!searchin/meteor-talk/minimongo$20offline/meteor-talk/tGto0cCsvXA/dH3uZjEd9y4J">google groups thread</a> is a good follow up.</p>
+
+<h1>Summary</h1>
+
+<p>Making an offline web application requires a different ways of thinking about a solution, and there are many plenty problems to solve. These packages help pushing forward on making offline web applications. Feel free to ask questions, I&rsquo;m not an expert but I&rsquo;ll try my best to answer.</p>
+
+<p>As an example, you can run <a href="https://github.com/groupbuddies/tripl.it.git">tripl.it</a> and see it&rsquo;s source code. It&rsquo;s a mobile application that works offline.</p>
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h1 class="title">Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+      </div>
+      <footer id="footer" class="inner">Copyright &copy; 2014
+
+    Gabriel Poça
+
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+    </div>
+  </div>
+  
+
+</body>
+</html>

@@ -29,6 +29,18 @@ I&rsquo;ve never done it before and I hope not to to do it again. &hellip;">
       <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
       
       
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', '82577395']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
 
     </head>
 
@@ -101,13 +113,20 @@ I&rsquo;ve never done it before and I hope not to to do it again.</p>
 a new one and place it in the right place. Everything gets copied,
 including the formulas.</p>
 
-<pre><code>function newLine() {
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = spreadsheet.getActiveSheet();
-  sheet.insertRowsAfter(10, 1);
-  sheet.getRange("A10:F10").copyTo(sheet.getRange("A11:F11"));
-}
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">newLine</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">spreadsheet</span> <span class="o">=</span> <span class="nx">SpreadsheetApp</span><span class="p">.</span><span class="nx">getActiveSpreadsheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">sheet</span> <span class="o">=</span> <span class="nx">spreadsheet</span><span class="p">.</span><span class="nx">getActiveSheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">sheet</span><span class="p">.</span><span class="nx">insertRowsAfter</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">sheet</span><span class="p">.</span><span class="nx">getRange</span><span class="p">(</span><span class="s2">&quot;A10:F10&quot;</span><span class="p">).</span><span class="nx">copyTo</span><span class="p">(</span><span class="nx">sheet</span><span class="p">.</span><span class="nx">getRange</span><span class="p">(</span><span class="s2">&quot;A11:F11&quot;</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Create a new document</h2>
 
@@ -115,12 +134,18 @@ including the formulas.</p>
 Then I need a function to duplicate that document (teaching my dad
 wasn&rsquo;t working).</p>
 
-<pre><code>function newSheet() {
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = spreadsheet.getSheetByName('Default')
-  sheet.copyTo(spreadsheet).setName("Novo orçamento");
-}
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">newSheet</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">spreadsheet</span> <span class="o">=</span> <span class="nx">SpreadsheetApp</span><span class="p">.</span><span class="nx">getActiveSpreadsheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">sheet</span> <span class="o">=</span> <span class="nx">spreadsheet</span><span class="p">.</span><span class="nx">getSheetByName</span><span class="p">(</span><span class="s1">&#39;Default&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nx">sheet</span><span class="p">.</span><span class="nx">copyTo</span><span class="p">(</span><span class="nx">spreadsheet</span><span class="p">).</span><span class="nx">setName</span><span class="p">(</span><span class="s2">&quot;Novo orçamento&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Wrap it up</h2>
 
@@ -130,31 +155,54 @@ wasn&rsquo;t working).</p>
 
 <p>And the full script</p>
 
-<pre><code>function newLine() {
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = spreadsheet.getActiveSheet();
-  sheet.insertRowsAfter(10, 1);
-  sheet.getRange("A10:F10").copyTo(sheet.getRange("A11:F11"));
-}
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">newLine</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">spreadsheet</span> <span class="o">=</span> <span class="nx">SpreadsheetApp</span><span class="p">.</span><span class="nx">getActiveSpreadsheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">sheet</span> <span class="o">=</span> <span class="nx">spreadsheet</span><span class="p">.</span><span class="nx">getActiveSheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">sheet</span><span class="p">.</span><span class="nx">insertRowsAfter</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">sheet</span><span class="p">.</span><span class="nx">getRange</span><span class="p">(</span><span class="s2">&quot;A10:F10&quot;</span><span class="p">).</span><span class="nx">copyTo</span><span class="p">(</span><span class="nx">sheet</span><span class="p">.</span><span class="nx">getRange</span><span class="p">(</span><span class="s2">&quot;A11:F11&quot;</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">newSheet</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">spreadsheet</span> <span class="o">=</span> <span class="nx">SpreadsheetApp</span><span class="p">.</span><span class="nx">getActiveSpreadsheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">sheet</span> <span class="o">=</span> <span class="nx">spreadsheet</span><span class="p">.</span><span class="nx">getSheetByName</span><span class="p">(</span><span class="s1">&#39;Default&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nx">sheet</span><span class="p">.</span><span class="nx">copyTo</span><span class="p">(</span><span class="nx">spreadsheet</span><span class="p">).</span><span class="nx">setName</span><span class="p">(</span><span class="s2">&quot;Novo orçamento&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// The onOpen function is executed automatically every time a Spreadsheet is loaded</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">onOpen</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ss</span> <span class="o">=</span> <span class="nx">SpreadsheetApp</span><span class="p">.</span><span class="nx">getActiveSpreadsheet</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">menuEntries</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">menuEntries</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Novo orçamento&quot;</span><span class="p">,</span> <span class="nx">functionName</span><span class="o">:</span> <span class="s2">&quot;newSheet&quot;</span><span class="p">});</span>
+</span><span class='line'>  <span class="nx">menuEntries</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">menuEntries</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Adicionar novo produto&quot;</span><span class="p">,</span> <span class="nx">functionName</span><span class="o">:</span> <span class="s2">&quot;newLine&quot;</span><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">ss</span><span class="p">.</span><span class="nx">addMenu</span><span class="p">(</span><span class="s2">&quot;Orçamento&quot;</span><span class="p">,</span> <span class="nx">menuEntries</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-function newSheet() {
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = spreadsheet.getSheetByName('Default')
-  sheet.copyTo(spreadsheet).setName("Novo orçamento");
-}
-
-// The onOpen function is executed automatically every time a Spreadsheet is loaded
-function onOpen() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var menuEntries = [];
-
-  menuEntries.push({name: "Novo orçamento", functionName: "newSheet"});
-  menuEntries.push(null);
-  menuEntries.push({name: "Adicionar novo produto", functionName: "newLine"});
-
-  ss.addMenu("Orçamento", menuEntries);
-}
-</code></pre>
 
 <p>It took a whole morning.</p>
 </div>
@@ -163,32 +211,6 @@ function onOpen() {
 
 	<div class="share">
 	<div class="addthis_toolbox addthis_default_style ">
-	
-	
-	<a class="addthis_button_tweet"></a>
-	
-	
-	<a class="addthis_counter addthis_pill_style"></a>
-	</div>
-  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
-</div>
-
-
-</div>
-      </div>
-      <footer id="footer" class="inner">Copyright &copy; 2014
-
-    Gabriel Poça
-
-
-Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
-    </div>
-  </div>
-  
-
-</body>
-</html>
->
 	
 	
 	<a class="addthis_button_tweet"></a>
