@@ -13,3 +13,9 @@ kramdown:
   use_coderay: true
   coderay:
     coderay_line_numbers:      nil
+
+gravatar:
+  default_image: mm
+  size: 600
+  rating: g
+  secure: true

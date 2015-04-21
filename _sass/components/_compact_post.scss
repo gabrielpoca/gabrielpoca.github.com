@@ -1,0 +1,10 @@
+.CompactPost {
+  .CompactPost-meta {
+  }
+
+  .CompactPost-title,
+  .CompactPost-title > a {
+    color: $text-color;
+    @extend .Heading2;
+  }
+}

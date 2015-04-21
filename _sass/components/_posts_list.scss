@@ -1,0 +1,9 @@
+.PostsList {
+  margin-left: 0;
+  list-style: none;
+
+  .PostsList-post:not(:last-child) {
+    margin-bottom: $spacing-unit;
+  }
+}
+

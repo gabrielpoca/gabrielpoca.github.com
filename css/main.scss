@@ -4,10 +4,13 @@
 
 @charset "utf-8";
 
-$base-font-family: Helvetica, Arial, sans-serif;
-$base-font-size:   16px;
-$small-font-size:  $base-font-size * 0.875;
+$base-font-family: 'Merriweather', Helvetica, Arial, sans-serif;
+$base-font-size:   20px;
 $base-line-height: 1.5;
+
+$small-font-size:  $base-font-size * 0.875;
+
+$alternative-font-family: 'Raleway', sans-serif;
 
 $spacing-unit:     30px;
 
@@ -33,6 +36,7 @@ $on-laptop:        800px;
 //         padding-left: $spacing-unit / 2;
 //     }
 // }
+
 @mixin media-query($device) {
     @media screen and (max-width: $device) {
         @content;
@@ -42,3 +46,11 @@ $on-laptop:        800px;
 @import "base";
 @import "layout";
 @import "syntax-highlighting";
+
+@import "components/sidebar";
+@import "components/layout";
+@import "components/posts_list";
+@import "components/compact_post";
+@import "components/page";
+@import "components/post";
+@import "components/text";

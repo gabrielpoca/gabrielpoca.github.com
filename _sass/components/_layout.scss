@@ -1,0 +1,18 @@
+.Layout {
+  $layout-width: 300px;
+
+  position: relative;
+
+  .Layout-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: $layout-width;
+    height: 100%;
+  }
+
+  .Layout-content {
+    margin-left: $layout-width;
+    width: calc(100% - ${$layout-width});
+  }
+}

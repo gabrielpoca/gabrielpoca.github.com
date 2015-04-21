@@ -1,0 +1,19 @@
+.Sidebar {
+  background-color: #eee;
+  height: 100%;
+  width: 100%;
+
+  .Sidebar-picture {
+    width: 120px;
+    margin: 0 auto;
+
+    img {
+      border-radius: 50%;
+      max-width: 100%;
+    }
+  }
+
+  .Sidebar-title {
+    text-align: center;
+  }
+}
