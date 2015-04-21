@@ -1,0 +1,15 @@
+title: Gabriel Poça
+email: gabrielpoca@gmail.com
+description: "Personal technical blog."
+baseurl: ""
+url: "http://gabrielpoca.com"
+twitter_username: gabrielgpoca
+github_username:  gabrielpoca
+
+markdown: kramdown
+
+kramdown:
+  input: GFM
+  use_coderay: true
+  coderay:
+    coderay_line_numbers:      nil
