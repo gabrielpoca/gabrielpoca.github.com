@@ -14,6 +14,20 @@
   }
 
   .Sidebar-title {
+    font-family: $alternative-font-family;
     text-align: center;
+  }
+
+  .Sidebar-social {
+    font-size: 40px;
+    text-align: center;
+
+    &, a {
+      color: $text-color;
+    }
+  }
+
+  .Sidebar-socialItem {
+    display: inline-block;
   }
 }

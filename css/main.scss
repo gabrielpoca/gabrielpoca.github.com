@@ -4,6 +4,11 @@
 
 @charset "utf-8";
 
+$grey: #EDEDED;
+$red: #942222;
+$black: #333333;
+$dark-grey: #666666;
+
 $base-font-family: 'Merriweather', Helvetica, Arial, sans-serif;
 $base-font-size:   20px;
 $base-line-height: 1.5;
@@ -14,9 +19,9 @@ $alternative-font-family: 'Raleway', sans-serif;
 
 $spacing-unit:     30px;
 
-$text-color:       #333;
+$text-color:       $black;
 $background-color: #fdfdfd;
-$brand-color:      #2a7ae2;
+$brand-color:      $red;
 
 $grey-color:       #828282;
 $grey-color-light: lighten($grey-color, 40%);

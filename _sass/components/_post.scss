@@ -41,7 +41,9 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-weight: 300;
+    font-family: $alternative-font-family;
+    font-weight: bold;
+    margin-top: $spacing-unit * 1.5;
   }
 
   a {
