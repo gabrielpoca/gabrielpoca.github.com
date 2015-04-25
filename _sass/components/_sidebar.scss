@@ -49,5 +49,14 @@
     .Sidebar-socialItem:not(:last-child) {
       margin-right: 40px;
     }
+
+    .Sidebar-contentWrapper {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      transform: translateY(-50%);
+      -webkit-transform: translateY(-50%);
+    }
   }
 }

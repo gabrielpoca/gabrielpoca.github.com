@@ -1,28 +1,30 @@
 <div class="Sidebar">
-  <div class="Sidebar-picture">
-    {{ 'gabrielpoca@gmail.com' | gravatar:'Profile Picture' }}
-  </div>
-  <h2 class="Sidebar-title">Gabriel Poça</h2>
-  <nav class="Sidebar-social">
-    <ul>
-      {% if site.github_username %}
+  <div class="Sidebar-contentWrapper">
+    <div class="Sidebar-picture">
+      {{ 'gabrielpoca@gmail.com' | gravatar:'Profile Picture' }}
+    </div>
+    <h2 class="Sidebar-title">Gabriel Poça</h2>
+    <nav class="Sidebar-social">
+      <ul>
+        {% if site.github_username %}
         <li class="Sidebar-socialItem">
           <a href="https://github.com/{{ site.github_username }}"
             target="_blank">{% icon fa-github %}</a>
         </li>
-      {% endif %}
+        {% endif %}
 
-      {% if site.twitter_username %}
+        {% if site.twitter_username %}
         <li class="Sidebar-socialItem">
           <a href="https://twitter.com/{{ site.twitter_username }}"
             target="_blank">{% icon fa-twitter %}</a>
         </li>
-      {% endif %}
+        {% endif %}
 
-      <li class="Sidebar-socialItem">
-        <a href="{{ "/feed.xml" | prepend: site.baseurl }}"
-          target="_blank">{% icon fa-rss %}</a>
-      </li>
-    </ul>
-  </nav>
+        <li class="Sidebar-socialItem">
+          <a href="{{ "/feed.xml" | prepend: site.baseurl }}"
+            target="_blank">{% icon fa-rss %}</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 </div>
