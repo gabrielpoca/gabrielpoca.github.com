@@ -2,14 +2,26 @@
   <div class="Sidebar-picture">
     {{ 'gabrielpoca@gmail.com' | gravatar:'Profile Picture' }}
   </div>
-  <h1 class="Sidebar-title">Gabriel Poça</h1>
+  <h2 class="Sidebar-title">Gabriel Poça</h2>
   <nav class="Sidebar-social">
     <ul>
+      {% if site.github_username %}
+        <li class="Sidebar-socialItem">
+          <a href="https://github.com/{{ site.github_username }}"
+            target="_blank">{% icon fa-github %}</a>
+        </li>
+      {% endif %}
+
+      {% if site.twitter_username %}
+        <li class="Sidebar-socialItem">
+          <a href="https://twitter.com/{{ site.twitter_username }}"
+            target="_blank">{% icon fa-twitter %}</a>
+        </li>
+      {% endif %}
+
       <li class="Sidebar-socialItem">
-        <a href="http://github.com/gabrielpoca" target="_blank">{% icon fa-github %}</a>
-      </li>
-      <li class="Sidebar-socialItem">
-        <a href="http://twitter.com/gabrielgpoca" target="_blank">{% icon fa-twitter %}</a>
+        <a href="{{ "/feed.xml" | prepend: site.baseurl }}"
+          target="_blank">{% icon fa-rss %}</a>
       </li>
     </ul>
   </nav>

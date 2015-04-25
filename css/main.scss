@@ -4,10 +4,12 @@
 
 @charset "utf-8";
 
-$grey: #EDEDED;
-$red: #942222;
+$grey: #C1CDD6;
+$dark-red: #BD2C2C;
+$red: #CF4848;
+$light-red: #DF6262;
 $black: #333333;
-$dark-grey: #666666;
+$dark-grey: #98A9B6;
 
 $base-font-family: 'Merriweather', Helvetica, Arial, sans-serif;
 $base-font-size:   20px;
@@ -19,20 +21,21 @@ $alternative-font-family: 'Raleway', sans-serif;
 
 $spacing-unit:     30px;
 
-$text-color:       $black;
+$text-color: $black;
 $background-color: #fdfdfd;
-$brand-color:      $red;
 
-$grey-color:       #828282;
-$grey-color-light: lighten($grey-color, 40%);
-$grey-color-dark:  darken($grey-color, 25%);
+$brand-color: $red;
+$brand-color-light: $light-red;
+$brand-color-dark: $dark-red;
+
+$grey-color: $grey;
+$grey-color-light: lighten($grey-color, 10%);
+$grey-color-dark: $dark-grey;
 
 $content-width:    800px;
 
 $on-palm:          600px;
 $on-laptop:        800px;
-
-
 
 // Using media queries with like this:
 // @include media-query($on-palm) {
@@ -49,9 +52,9 @@ $on-laptop:        800px;
 }
 
 @import "base";
-@import "layout";
 @import "syntax-highlighting";
 
+@import "mixins";
 @import "components/sidebar";
 @import "components/layout";
 @import "components/posts_list";
@@ -59,3 +62,5 @@ $on-laptop:        800px;
 @import "components/page";
 @import "components/post";
 @import "components/text";
+@import "components/paragraph";
+@import "components/line";

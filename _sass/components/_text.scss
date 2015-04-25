@@ -10,3 +10,13 @@
   font-size: 30px;
   line-height: 1.5;
 }
+
+.Text {
+  font-size: $base-font-size;
+  font-family: $base-font-family;
+  color: $text-color;
+}
+
+.Text.Text-small {
+  font-size: $small-font-size;
+}

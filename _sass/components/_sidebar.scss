@@ -1,13 +1,16 @@
 .Sidebar {
-  background-color: #eee;
   height: 100%;
   width: 100%;
+  padding: $spacing-unit * 2 0;
+  background-color: $brand-color-light;
+  line-height: 1;
 
   .Sidebar-picture {
-    width: 120px;
+    width: 100px;
     margin: 0 auto;
 
     img {
+      border: 4px solid white;
       border-radius: 50%;
       max-width: 100%;
     }
@@ -15,19 +18,36 @@
 
   .Sidebar-title {
     font-family: $alternative-font-family;
+    line-height: 2;
     text-align: center;
+    color: white;
   }
 
   .Sidebar-social {
-    font-size: 40px;
+    font-size: 30px;
     text-align: center;
 
     &, a {
-      color: $text-color;
+      @include hover(color);
+      color: white;
     }
   }
 
   .Sidebar-socialItem {
     display: inline-block;
+
+    &:not(:last-child) {
+      margin-right: 20px; 
+    }
+  }
+}
+
+@include media-query($on-palm) {
+  .Sidebar {
+    padding: $spacing-unit / 2 0;
+
+    .Sidebar-socialItem:not(:last-child) {
+      margin-right: 40px;
+    }
   }
 }

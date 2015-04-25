@@ -1,10 +1,42 @@
 .CompactPost {
-  .CompactPost-meta {
-  }
+  $space: 10px;
+
+  padding-bottom: 10px;
+  text-decoration: none;
+  display: block;
 
   .CompactPost-title,
   .CompactPost-title > a {
-    color: $text-color;
     @extend .Heading2;
+
+    color: $text-color;
+    text-decoration: none;
+  }
+
+  .CompactPost-meta {
+    position: relative;
+    border-bottom: 1px solid $grey-color-dark;
+    padding-bottom: $space;
+  }
+
+  .CompactPost-meta:after {
+    content: " ";
+
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+
+    width: 0px;
+    height: 3px;
+
+    background-color: $brand-color;
+    transition: width 0.3s ease-out;
+    transition-delay: 0.3s;
+  }
+
+  &:hover {
+    .CompactPost-meta:after {
+      width: 100%;
+    }
   }
 }

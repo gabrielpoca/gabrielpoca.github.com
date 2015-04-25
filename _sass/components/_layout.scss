@@ -1,5 +1,5 @@
 .Layout {
-  $layout-width: 300px;
+  $layout-width: 400px;
 
   position: relative;
 
@@ -16,3 +16,19 @@
     width: calc(100% - ${$layout-width});
   }
 }
+
+@include media-query($on-palm) {
+  .Layout {
+    .Layout-sidebar {
+      position: relative;
+      width: 100%;
+      height: auto;
+    }
+
+    .Layout-content {
+      width: 100%;
+      margin-left: 0;
+    }
+  }
+}
+

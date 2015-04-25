@@ -6,19 +6,19 @@ layout: default
   <ul class="PostsList">
     {% for post in site.posts %}
     <li class="PostsList-post">
-      <div class="CompactPost">
+      <a href="{{ post.url | prepend: site.baseurl }}" class="CompactPost">
         <h2 class="CompactPost-title">
-          <a href="{{ post.url | prepend: site.baseurl }}">
-            {{ post.title }}
-          </a>
+          {{ post.title }}
         </h2>
-        <span class="CompactPost-meta">
-          {{ post.date | date: "%b %-d, %Y" }}
-        </span>
-      </div>
+        <div>
+          <span class="CompactPost-meta">
+            <span class="Text Text-small">
+              {{ post.date | date: "%b %-d, %Y" }}
+            </span>
+          </span>
+        </div>
+      </a>
     </li>
     {% endfor %}
   </ul>
-
-  <p class="rss-jubscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
 </div>
