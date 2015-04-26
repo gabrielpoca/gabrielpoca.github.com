@@ -1,11 +1,13 @@
 .Page {
+  margin: 0 auto;
+  max-width: -webkit-calc(#{$content-width} - (#{$spacing-unit} * 2));
   max-width: calc(#{$content-width} - (#{$spacing-unit} * 2));
   padding: $spacing-unit; 
   @extend %clearfix;
 
   @include media-query($on-laptop) {
     max-width: -webkit-calc(#{$content-width} - (#{$spacing-unit}));
-    max-width:         calc(#{$content-width} - (#{$spacing-unit}));
+    max-width: calc(#{$content-width} - (#{$spacing-unit}));
     padding-right: $spacing-unit / 2;
     padding-left: $spacing-unit / 2;
   }
