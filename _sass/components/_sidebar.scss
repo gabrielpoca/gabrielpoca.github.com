@@ -39,6 +39,7 @@
 
   .Sidebar-title {
     margin-left: $picture-width * 1.3;
+    margin-right: 20px;
     font-family: $alternative-font-family;
     color: white;
     line-height: 2;
@@ -60,10 +61,6 @@
 
     padding-top: 5px;
     margin-left: 20px; 
-
-    &:first-child {
-      margin-left: 40px; 
-    }
   }
 }
 
@@ -91,11 +88,9 @@
       margin: 0 auto;
     }
 
-    .Sidebar-social {
+    .Sidebar-social .Sidebar-socialItem {
       font-size: 30px;
-      &:not(:first-child) {
-        margin: 0 20px 0 0;
-      }
+      margin: 0 10px;
     }
 
     .Sidebar-contentWrapper {
