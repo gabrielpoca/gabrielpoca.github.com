@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Playing with Google Apps Script</title>
+  <meta name="description" content="I wrote a google apps script for a spreadsheet.I’ve never done it before and I hope not to to do it again.">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://gabrielpoca.com/2013/12/03/playing-with-google-apps-script.html">
+  <link rel="alternate" type="application/rss+xml" title="Gabriel Poça" href="http://gabrielpoca.com/feed.xml" />
+
+  <!--<link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,700,900,400italic,300italic' rel='stylesheet' type='text/css'>-->
+  <link href='http://fonts.googleapis.com/css?family=Raleway:700,400|Merriweather:400italic,400,300italic,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js">
+  </script>
+
+  <script src="/js/app.js">
+  </script>
+</head>
+
+  <body>
+    <div class="Layout">
+      <div class="Layout-sidebar">
+        <div class="Sidebar">
+  <div class="Sidebar-contentWrapper">
+    <div class="Sidebar-picture">
+      <img class="Gravatar" alt="Profile Picture" src="https://www.gravatar.com/avatar/2c4b850cf6a0a3be7a18c7840bc12435?s=600&r=g&d=mm"></img>
+    </div>
+    <h2 class="Sidebar-title">Gabriel Poça</h2>
+    <nav class="Sidebar-social">
+      <ul>
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://github.com/gabrielpoca"
+            target="_blank"><i class="fa fa-github"></i></a>
+        </li>
+        
+
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://twitter.com/gabrielgpoca"
+            target="_blank"><i class="fa fa-twitter"></i></a>
+        </li>
+        
+
+        <li class="Sidebar-socialItem">
+          <a href="/feed.xml"
+            target="_blank"><i class="fa fa-rss"></i></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+      </div>
+
+      <div class="Layout-content">
+        <div class="Page">
+
+  <div class="Post">
+    <header class="Post-header">
+      <h1 class="Post-title">Playing with Google Apps Script</h1>
+      <p class="post-meta">Dec 3, 2013</p>
+    </header>
+
+    <article class="Post-content">
+      <p>I wrote a google apps script for a spreadsheet.<br />
+I’ve never done it before and I hope not to to do it again.</p>
+
+<p>The reason I’ve wrote it was to automate some tasks on my dad’s budget spreadsheet:</p>
+
+<ul>
+  <li>Create a new row in a given place with a given formula.</li>
+  <li>Duplicate a document used as template.</li>
+</ul>
+
+<h2 id="insert-a-row">Insert a row</h2>
+
+<p>I created a template row and made it hidden. Then my function uses it to create <br />
+a new one and place it in the right place. Everything gets copied,<br />
+including the formulas.</p>
+
+<pre><code class="language-javascript">function newLine() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getActiveSheet();
+  sheet.insertRowsAfter(10, 1);
+  sheet.getRange("A10:F10").copyTo(sheet.getRange("A11:F11"));
+}
+</code></pre>
+
+<h2 id="create-a-new-document">Create a new document</h2>
+
+<p>I created a default document to be used as a template for all budgets.<br />
+Then I need a function to duplicate that document (teaching my dad<br />
+wasn’t working).</p>
+
+<pre><code class="language-javascript">function newSheet() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getSheetByName('Default')
+  sheet.copyTo(spreadsheet).setName("Novo orçamento");
+}
+</code></pre>
+
+<h2 id="wrap-it-up">Wrap it up</h2>
+
+<p>I made both functions available on the top menu, as seen in the image</p>
+
+<p><img src="/images/2013/12/google-apps-print.png" alt="google-apps-pring" /></p>
+
+<p>And the full script </p>
+
+<pre><code class="language-javascript">function newLine() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getActiveSheet();
+  sheet.insertRowsAfter(10, 1);
+  sheet.getRange("A10:F10").copyTo(sheet.getRange("A11:F11"));
+}
+function newSheet() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getSheetByName('Default')
+  sheet.copyTo(spreadsheet).setName("Novo orçamento");
+}
+
+// The onOpen function is executed automatically every time a Spreadsheet is loaded
+function onOpen() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var menuEntries = [];
+
+  menuEntries.push({name: "Novo orçamento", functionName: "newSheet"});
+  menuEntries.push(null);
+  menuEntries.push({name: "Adicionar novo produto", functionName: "newLine"});
+
+  ss.addMenu("Orçamento", menuEntries);
+}
+</code></pre>
+
+<p>It took a whole morning.</p>
+
+    </article>
+  </div>
+</div>
+
+        <footer class="Footer">
+  <div class="Page">
+    <hr class="Line">
+
+    <p class="Paragraph">
+      Interested in working together?
+      I'm available
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">for hire!</a>
+      Reach me on
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">Twitter</a>.
+    </p>
+
+    <p class="Paragraph">
+      <span class="Text Text-small">
+        Thank you for visting. Feel free to engage with me on
+        <a href="https://twitter.com/gabrielgpoca">Twitter</a>.
+      </span>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-48359304-1', 'auto');
+ga('send', 'pageview');
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>

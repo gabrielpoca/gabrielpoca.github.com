@@ -1,30 +1,856 @@
----
-layout: null
----
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>{{ site.title | xml_escape }}</title>
-    <description>{{ site.description | xml_escape }}</description>
-    <link>{{ site.url }}{{ site.baseurl }}/</link>
-    <atom:link href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}" rel="self" type="application/rss+xml"/>
-    <pubDate>{{ site.time | date_to_rfc822 }}</pubDate>
-    <lastBuildDate>{{ site.time | date_to_rfc822 }}</lastBuildDate>
-    <generator>Jekyll v{{ jekyll.version }}</generator>
-    {% for post in site.posts limit:10 %}
+    <title>Gabriel Poça</title>
+    <description>Personal technical blog.</description>
+    <link>http://gabrielpoca.com/</link>
+    <atom:link href="http://gabrielpoca.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 26 May 2015 23:03:37 +0100</pubDate>
+    <lastBuildDate>Tue, 26 May 2015 23:03:37 +0100</lastBuildDate>
+    <generator>Jekyll v2.4.0</generator>
+    
       <item>
-        <title>{{ post.title | xml_escape }}</title>
-        <description>{{ post.content | xml_escape }}</description>
-        <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
-        <link>{{ post.url | prepend: site.baseurl | prepend: site.url }}</link>
-        <guid isPermaLink="true">{{ post.url | prepend: site.baseurl | prepend: site.url }}</guid>
-        {% for tag in post.tags %}
-        <category>{{ tag | xml_escape }}</category>
-        {% endfor %}
-        {% for cat in post.categories %}
-        <category>{{ cat | xml_escape }}</category>
-        {% endfor %}
+        <title>A better reset for the mobile web</title>
+        <description>&lt;p&gt;This blog post was written for &lt;a href=&quot;https://blog.groupbuddies.com/posts/53-a-better-reset-for-the-mobile-web&quot;&gt;Group Buddies Blog&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Mobile web applications are expected to work differently from desktop applications. They need to feel responsive to the user’s touch. Having worked on a couple of mobile web applications in the last year, I found that I always start by changing the browser’s default appearance and behaviour. This article contains my setup to make a mobile web application feel more like a native one.&lt;/p&gt;
+
+&lt;h1 id=&quot;css-reset&quot;&gt;CSS Reset&lt;/h1&gt;
+
+&lt;p&gt;The following is a set of rules I use in every mobile web application. Keep in mind that some of these are my personal preference.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-css&quot;&gt;*, *:before, *:after {
+  /* suppressing the tap highlight */
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+
+  /* this is a personal preference */
+  box-sizing: border-box;
+  vertical-align: top;
+  padding: 0;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+*:focus {
+  /* the default outline doesn&#39;t play well with a mobile application,
+     I usually start without it,
+     but don&#39;t forget to research further to make your mobile app accessible. */
+  outline: 0;
+}
+
+input {
+  border-radius: 0;
+}
+
+html, body {
+  /* we don&#39;t want to allow users to select text everywhere,
+     you can enable it on the places you think appropriate */
+  user-select: none;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;When using a mobile framework, like &lt;a href=&quot;http://ionicframework.com/&quot;&gt;ionic&lt;/a&gt;, you usually don’t need to worry about this, it’s already there. Also, remember to run these styles through &lt;a href=&quot;https://github.com/postcss/autoprefixer&quot;&gt;autoprefixer&lt;/a&gt;, since you’ll need the vendor prefixes.&lt;/p&gt;
+
+&lt;h1 id=&quot;prevent-user-scaling&quot;&gt;Prevent user scaling&lt;/h1&gt;
+
+&lt;p&gt;To adjust the browser’s viewport for a mobile application you can use the following meta tag:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1, user-scalable=no&quot;&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;width=device-width&lt;/code&gt; part sets the width of the viewport as the width of the device.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;initial-scale&lt;/code&gt; property controls the zoom level when the page is first loaded, and the &lt;code&gt;user-scalable&lt;/code&gt; property prevents the user from zooming in and out on your mobile application.&lt;/p&gt;
+
+&lt;h1 id=&quot;overscroll&quot;&gt;Overscroll&lt;/h1&gt;
+
+&lt;p&gt;Most mobile browsers have an “elastic” overscroll for the entire page. This is the reason why, in some web sites, you can pull down the header (that’s fixed on the top), revealing a empty layer behind the application. You usually don’t want this.&lt;/p&gt;
+
+&lt;p&gt;On &lt;a href=&quot;https://cordova.apache.org/&quot;&gt;Apache Cordova&lt;/a&gt;, pasting the following rules in the &lt;code&gt;config.xml&lt;/code&gt; file should do the trick of disabling the overscroll.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;preference name=&quot;webviewbounce&quot; value=&quot;false&quot;/&amp;gt;
+&amp;lt;preference name=&quot;DisallowOverscroll&quot; value=&quot;true&quot;/&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;On a regular browser you can disable the &lt;code&gt;touchmove&lt;/code&gt; on the document, which obtains the same result.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;$(&#39;body&#39;).on(&#39;touchmove&#39;, function (e) {
+  if (! $(&#39;.scrollable&#39;).has($(e.target)).length)
+    e.preventDefault();
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Even though you don’t want a full page overscroll, some places of the application may require scroll. For those places you can enable it with the following rules.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-css&quot;&gt;.scrollable {
+  -webkit-overflow-scrolling: touch;
+  overflow: scroll;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Notice that on the JavaScript we are excluding the class &lt;code&gt;scrollable&lt;/code&gt;. You need to add this class to the places you want scrollable content.&lt;br /&gt;
+The &lt;code&gt;-webkit-overflow-scrolling: touch;&lt;/code&gt; enables the “momentum” style scrolling.&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;The tips I’ve shared should be helpful for every application. But it doesn’t stop here. There is much more you can do to improve the look and feel of a mobile web application, but I’ll leave that for another blog post.&lt;/p&gt;
+
+&lt;p&gt;For those who don’t see the web as a viable platform for mobile, give it another chance. You might end up feeling utterly surprised.&lt;/p&gt;
+</description>
+        <pubDate>Fri, 04 Sep 2015 00:00:00 +0100</pubDate>
+        <link>http://gabrielpoca.com/2015/09/04/a-better-reset-for-the-mobile-web.html</link>
+        <guid isPermaLink="true">http://gabrielpoca.com/2015/09/04/a-better-reset-for-the-mobile-web.html</guid>
+        
+        
       </item>
-    {% endfor %}
+    
+      <item>
+        <title>Offline Web Apps with Meteor</title>
+        <description>&lt;p&gt;This blog post was written for &lt;a href=&quot;http://blog.groupbuddies.com/posts/45-offline-web-apps-with-meteor&quot;&gt;Group Buddies Blog&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;In this blog post I’m presenting a solution to make Meteor apps work completely offline. In fact, Meteor apps already work offline, as long as the user doesn’t close the browser.&lt;/p&gt;
+
+&lt;p&gt;If you don’t know what Meteor is or how it works, I recommend that you take a look at the &lt;a href=&quot;http://docs.meteor.com/#/basic/&quot;&gt;meteor docs&lt;/a&gt; before moving forward.&lt;/p&gt;
+
+&lt;p&gt;One of the principles of Meteor is “Data on the Wire”, i.e., each client receives all assets upon connection, after which only data is sent between the client and the server.&lt;/p&gt;
+
+&lt;p&gt;Another principle is “Database Everywhere”, i.e., each client has a subset of the server database that responds to the same operations with the same api.&lt;/p&gt;
+
+&lt;p&gt;When offline, a client has everything needed to keep the app running. This article focuses on how to allow a user to reopen the application, while being offline, after the browser has been closed.&lt;/p&gt;
+
+&lt;h1 id=&quot;persisting-assets&quot;&gt;Persisting assets&lt;/h1&gt;
+
+&lt;p&gt;HTML5 made some progress in allowing web applications to be accessible offline. The result of it is the ApplicationCache interface. Since many people don’t know, or understand, &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache&quot;&gt;AppCache&lt;/a&gt;, here’s how it is defined in MDN (Mozilla Developer Network).&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Developers can use the Application Cache (AppCache) interface to specify resources that the browser should cache and make available to offline users. Applications that are cached load and work correctly even if users click the refresh button when they are offline.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;AppCache stores all the application assets and allows a user to open them when there is no internet connection. For more details on AppCache I recommend &lt;a href=&quot;http://www.html5rocks.com/en/tutorials/appcache/beginner/&quot;&gt;this guide&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;To start using AppCache on a Meteor application just add the package:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;meteor add appcache
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Don’t worry if the console logs say the app has more that 5 MB ( which is the recommended maximum). When Meteor builds for production it concatenates and minifies the assets. If it’s still more that 5 MB maybe you need to exclude some assets from AppCache.&lt;/p&gt;
+
+&lt;p&gt;For instance, you can tell AppCache not to save an image:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Meteor.AppCache.config
+  onlineOnly: [
+    &#39;/bg.png&#39;
+    ]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;a href=&quot;https://github.com/meteor/meteor/wiki/AppCache&quot;&gt;documentation&lt;/a&gt; is a good follow up on this topic.&lt;/p&gt;
+
+&lt;h1 id=&quot;persisting-data&quot;&gt;Persisting data&lt;/h1&gt;
+
+&lt;p&gt;The client side database is in-memory. When offline, Meteor will store both the current working database and a list of messages to send to the server on reconnect. There is no (official) way to persist this data to disk, and for this reason the information is lost when the browser is closed.&lt;/p&gt;
+
+&lt;p&gt;To overcome this limitation, there is &lt;a href=&quot;https://github.com/GroundMeteor/db&quot;&gt;GroundDB&lt;/a&gt;, a fast and thin layer providing Meteor with offline database and methods, saving them into the &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage#localStorage&quot;&gt;&lt;code&gt;localStorage&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;To start using GroundDB add the package.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;meteor add ground:db
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now your subscriptions will be available when you’re offline. If you’re using IronRouter you should not use the &lt;code&gt;waitOn&lt;/code&gt; feature, since this is going to make the application hold until the server responds. Instead, subscribe to the data you want offline on the application startup. For instance, in the file &lt;code&gt;lib/router.coffee&lt;/code&gt; you can have something like the following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;if Meteor.isClient
+  subscribed = false
+  Tracker.autorun () -&amp;gt;
+    if Meteor.user() &amp;amp;&amp;amp; !subscribed
+      Meteor.subscribe &#39;users&#39;
+      Meteor.subscribe &#39;trips&#39;
+      Meteor.subscribe &#39;expenses&#39;
+      Meteor.subscribe &#39;notifications&#39;
+      subscribed = true
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This way the data will always be on &lt;code&gt;localStorage&lt;/code&gt; when the user goes offline. This also means that you need to care about the amount of information that you save locally.&lt;/p&gt;
+
+&lt;p&gt;If you are interested in this topic, this &lt;a href=&quot;https://groups.google.com/forum/#!searchin/meteor-talk/minimongo$20offline/meteor-talk/tGto0cCsvXA/dH3uZjEd9y4J&quot;&gt;google groups thread&lt;/a&gt; is a good follow up.&lt;/p&gt;
+
+&lt;h1 id=&quot;summary&quot;&gt;Summary&lt;/h1&gt;
+
+&lt;p&gt;Making an offline web application requires a different ways of thinking about a solution, and there are many plenty problems to solve. These packages help pushing forward on making offline web applications. Feel free to ask questions, I’m not an expert but I’ll try my best to answer.&lt;/p&gt;
+
+&lt;p&gt;As an example, you can run &lt;a href=&quot;https://github.com/groupbuddies/tripl.it.git&quot;&gt;tripl.it&lt;/a&gt; and see it’s source code. It’s a mobile application that works offline.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 26 Nov 2014 22:18:55 +0000</pubDate>
+        <link>http://gabrielpoca.com/2014/11/26/offline-web-apps-with-meteor.html</link>
+        <guid isPermaLink="true">http://gabrielpoca.com/2014/11/26/offline-web-apps-with-meteor.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Tutorial: HTML Audio Capture streaming to Node.js (no browser extensions)</title>
+        <description>&lt;p&gt;This blog post was written for &lt;a href=&quot;http://blog.groupbuddies.com/posts/39-tutorial-html-audio-capture-streaming-to-node-js-no-browser-extensions&quot;&gt;Group Buddies Blog&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;I’m taking the time to write the tutorial I wish I had some months ago. My task was to set up some user voice recording mechanism in the browser. It should record for about one hour, non-stop, saving to a server. The idea was to use the &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/Navigator.getUserMedia&quot;&gt;getUserMedia()&lt;/a&gt; API. No browser extensions should be used.&lt;/p&gt;
+
+&lt;p&gt;The &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/Navigator.getUserMedia&quot;&gt;getUserMedia()&lt;/a&gt; API allows web apps to request access to a media device such as a camera or microphone. It yields raw PCM data.&lt;/p&gt;
+
+&lt;h2 id=&quot;round-one&quot;&gt;Round One&lt;/h2&gt;
+
+&lt;p&gt;We approached the task looking for the smallest change that solved the problem. We did it using &lt;a href=&quot;https://github.com/muaz-khan/WebRTC-Experiment/tree/master/RecordRTC&quot;&gt;RecordRTC&lt;/a&gt;. It records the microphone in the browser. When finished, we can upload it to a server through a normal request. Let me show you how it works.&lt;/p&gt;
+
+&lt;p&gt;Add the RecordRTC library.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;script src=&quot;//www.WebRTC-Experiment.com/RecordRTC.js&quot;&amp;gt;&amp;lt;/script&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Request access to the microphone.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;var session = {
+  audio: true,
+  video: false
+};
+var recordRTC = null;
+navigator.getUserMedia(session, function (mediaStream) {
+  recordRTC = RecordRTC(MediaStream);
+  recordRTC.startRecording();
+}, onError);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;When finished recording, stop and upload to a server.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;recordRTC.stopRecording(function(audioURL) {
+  var formData = new FormData();
+  formData.append(&#39;edition[audio]&#39;, recordRTC.getBlob())
+  $.ajax({
+    type: &#39;POST&#39;,
+    url: &#39;some/path&#39;,
+    data: formData,
+    contentType: false,
+    cache: false,
+    processData: false,
+  })
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The code works, but you shouldn’t write code like this, it’s just an example.&lt;/p&gt;
+
+&lt;h3 id=&quot;drawbacks&quot;&gt;Drawbacks&lt;/h3&gt;
+
+&lt;p&gt;Audio is recorded in wav format. An one hour recording, with one channel, can take around 500mb. This is a problem for the browser limited memory. Also the upload would take ages! It wasn’t working.&lt;/p&gt;
+
+&lt;h2 id=&quot;round-two&quot;&gt;Round Two&lt;/h2&gt;
+
+&lt;p&gt;After reading the source code from &lt;a href=&quot;https://github.com/muaz-khan/WebRTC-Experiment/tree/master/RecordRTC&quot;&gt;RecordRTC&lt;/a&gt; (ugly) and &lt;a href=&quot;https://github.com/mattdiamond/Recorderjs&quot;&gt;RecorderJS&lt;/a&gt;, I realised that using a &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/ScriptProcessorNode&quot;&gt;ScriptProcessorNode&lt;/a&gt; I can write JavaScript to send data chunks (audio samples) from the microphone to a server.&lt;/p&gt;
+
+&lt;p&gt;Turns out it’s harder than it seems, mostly because of the lack of information. There are a couple of related Stack Overflow answers (I will add them in the end), but I won’t bother you with this. Let’s move on to the code.&lt;/p&gt;
+
+&lt;h3 id=&quot;reading-data-from-the-microphone&quot;&gt;Reading data from the microphone&lt;/h3&gt;
+
+&lt;p&gt;First request microphone access.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;var session = {
+  audio: true,
+  video: false
+};
+var recordRTC = null;
+navigator.getUserMedia(session, initializeRecorder, onError);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Having the microphone stream you can use the &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/AudioContext&quot;&gt;AudioContext&lt;/a&gt; interface to make the audio (PCM data) go through different processing nodes before reaching its destination. There are nodes for gain, compressor, panner, and much more. We are going to write a custom node, so we can access the audio samples. For that we add a &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/ScriptProcessorNode&quot;&gt;ScriptProcessorNode&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;function initializeRecorder(stream) {
+  var audioContext = window.AudioContext;
+  var context = new audioContext();
+  var audioInput = context.createMediaStreamSource(stream);
+  var bufferSize = 2048;
+  // create a javascript node
+  var recorder = context.createJavaScriptNode(bufferSize, 1, 1);
+  // specify the processing function
+  recorder.onaudioprocess = recorderProcess;
+  // connect stream to our recorder
+  audioInput.connect(recorder);
+  // connect our recorder to the previous destination
+  recorder.connect(context.destination);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;After this, every audio sample will go through the &lt;code&gt;recorderProcess&lt;/code&gt; function.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;function recorderProcess(e) {
+  var left = e.inputBuffer.getChannelData(0);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We have now PCM data samples from the left channel. Since we are recording in mono we only need the left channel. Now moving on to streaming these chunks to the server.&lt;/p&gt;
+
+&lt;h3 id=&quot;communication&quot;&gt;Communication&lt;/h3&gt;
+
+&lt;p&gt;We are using WebSockets to send the samples to the server. The server is going to be written in Node.js.&lt;/p&gt;
+
+&lt;p&gt;I started with &lt;a href=&quot;http://socket.io/&quot;&gt;Socket.IO&lt;/a&gt;. When things didn’t work I realised Socket.IO doesn’t support binary communication (in fact, it does now, I made this before it did). &lt;a href=&quot;http://binaryjs.com/&quot;&gt;BinaryJS&lt;/a&gt; does support binary communication, so I moved to it.&lt;/p&gt;
+
+&lt;h4 id=&quot;setup-binaryjs&quot;&gt;Setup BinaryJS&lt;/h4&gt;
+
+&lt;p&gt;First add the BinaryJS library.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;script src=&quot;http://cdn.binaryjs.com/0/binary.js&quot;&amp;gt;&amp;lt;/script&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now start a connection.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;var client = new BinaryClient(&#39;ws://localhost:9001&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;When ready, create a write stream.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;client.on(&#39;open&#39;, function() {
+  // for the sake of this example let&#39;s put the stream in the window
+  window.Stream = client.createStream();
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Going back to our custom node let’s send the audio to the stream.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;function recorderProcess(e) {
+  var left = e.inputBuffer.getChannelData(0);
+  window.Stream.write(left);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Everything should be ready on the client side now. Our &lt;code&gt;recorderProcess&lt;/code&gt; function is called for each audio chunk, and each is sent to the server.&lt;/p&gt;
+
+&lt;p&gt;But we aren’t ready yet! There is one important step missing. WebAudio samples are in Float32. If you choose to send them like this you need to know that &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/Uint16Array&quot;&gt;endianness does matter&lt;/a&gt;. I chose to convert them to 16 bit signed integers:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;function convertFloat32ToInt16(buffer) {
+  l = buffer.length;
+  buf = new Int16Array(l);
+  while (l--) {
+    buf[l] = Math.min(1, buffer[l])*0x7FFF;
+  }
+  return buf.buffer;
+}
+
+function recorderProcess(e) {
+  var left = e.inputBuffer.getChannelData(0);
+  window.Stream.write(convertFloat32ToInt16(left));
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We are now done with the client code. Moving on to the server.&lt;/p&gt;
+
+&lt;h3 id=&quot;setting-up-a-server&quot;&gt;Setting up a server&lt;/h3&gt;
+
+&lt;p&gt;I’m not getting into much detail on the server, I’m just going to show how to put these chunks in a playable media file. I’m assuming you already have &lt;a href=&quot;http://nodejs.org/&quot;&gt;Node.js&lt;/a&gt; installed.&lt;/p&gt;
+
+&lt;p&gt;We need &lt;a href=&quot;http://binaryjs.com/&quot;&gt;BinaryJS&lt;/a&gt;, and &lt;a href=&quot;https://github.com/TooTallNate/node-wav&quot;&gt;node-wav&lt;/a&gt; on the server. The first is for communication, and the second accepts raw audio data and outputs a WAV file with a valid WAVE header.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;npm init
+npm install binaryjs
+npm install wav
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now create the &lt;code&gt;index.js&lt;/code&gt; file and start the BinaryJS server.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;var binaryServer = require(&#39;binaryjs&#39;).BinaryServer;
+var wav = require(&#39;wav&#39;);
+
+var server = binaryServer({port: 9001});
+
+server.on(&#39;connection&#39;, function(client) {
+  ...
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Inside the &lt;code&gt;server.on(&#39;connection&#39;, function)&lt;/code&gt; callback node-wav is going to help pipe the stream into a file.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;var fileWriter = null;
+
+client.on(&#39;stream&#39;, function(stream, meta) {
+  var fileWriter = new wav.FileWriter(&#39;demo.wav&#39;, {
+    channels: 1,
+    sampleRate: 48000,
+    bitDepth: 16
+  });
+  stream.pipe(fileWriter);
+  stream.on(&#39;end&#39;, function() {
+    fileWriter.end();
+  });
+});
+
+client.on(&#39;close&#39;, function() {
+  if (fileWriter != null) {
+    fileWriter.end();
+  }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For a better understanding you should read &lt;a href=&quot;https://github.com/TooTallNate/node-wav&quot;&gt;node-wav&lt;/a&gt; document. In fact, you should read the source code since there isn’t much documentation. Simply put, &lt;code&gt;wav.FileWriter&lt;/code&gt; accepts a pcm stream and sends it to a media file, setting the right header for the file.&lt;/p&gt;
+
+&lt;p&gt;Notice the settings for &lt;code&gt;wav.FileWriter&lt;/code&gt; are hardcoded, but they can be sent through the stream. Parameters like sample rate change for each client.&lt;/p&gt;
+
+&lt;h2 id=&quot;setup-complete&quot;&gt;Setup complete&lt;/h2&gt;
+
+&lt;p&gt;You are ready to start recording. There is still a long way to go from here. You should probably support restoring the connection if it goes down, and append the audio to the same media.&lt;/p&gt;
+
+&lt;h1 id=&quot;wrap-it-up&quot;&gt;Wrap it up&lt;/h1&gt;
+
+&lt;p&gt;You can now start from here and build your own platform with audio recording. Maybe a personal note-taking platform.&lt;/p&gt;
+
+&lt;p&gt;This solution allows you to record the microphone while not worrying about upload time and audio loss. The full source code is &lt;a href=&quot;https://github.com/gabrielpoca/browser-pcm-stream&quot;&gt;here&lt;/a&gt;. Feel free to leave any questions and comments.&lt;/p&gt;
+
+&lt;h3 id=&quot;stackoverflow-related-answers&quot;&gt;StackOverflow related answers&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://stackoverflow.com/questions/21079972/sound-card-detection-for-web/21080953#21080953&quot;&gt;Sound card detection for web&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://stackoverflow.com/questions/20876152/playing-pcm-stream-from-web-audio-api-on-node-js&quot;&gt;Playing PCM stream from Web Audio API on Node.js&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://stackoverflow.com/questions/20850396/stream-recorded-audio-from-browser-to-server&quot;&gt;Stream recorded audio from browser to server&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Tue, 24 Jun 2014 00:00:00 +0100</pubDate>
+        <link>http://gabrielpoca.com/2014/06/24/streaming-microphone-from-browser-to-nodejs-no-plugin.html</link>
+        <guid isPermaLink="true">http://gabrielpoca.com/2014/06/24/streaming-microphone-from-browser-to-nodejs-no-plugin.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Dipping the toes in Phonegap</title>
+        <description>&lt;p&gt;This blog post was written for &lt;a href=&quot;http://blog.groupbuddies.com/posts/35-dipping-the-toes-in-phonegap&quot;&gt;Group Buddies Blog&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Like most developers I know, there is a list of things I want to learn and experiment with. Mobile development was on the top of that list until last December, when we took a day off for an internal hackathon and some of us got to work on a mobile app.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://dl.dropboxusercontent.com/u/4056020/phonegap/working.jpg&quot; alt=&quot;Team Tripl.it&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;first-big-decision-why-phonegap&quot;&gt;First big decision: Why PhoneGap?&lt;/h2&gt;
+
+&lt;p&gt;There is plenty technology available for mobile development. You can go native or you can grab some framework. We chose PhoneGap for a few reasons:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;It’s open source.&lt;/li&gt;
+  &lt;li&gt;It’s multi-platform. Even though we ended up focusing on iOS, we didn’t have a plan at first (more on this subject ahead).&lt;/li&gt;
+  &lt;li&gt;It’s HTML, CSS and JavaScript. We eat this for breakfast, how hard could it be?&lt;/li&gt;
+  &lt;li&gt;I didn’t want to look at Objective-C, it hurts my eyes.&lt;/li&gt;
+  &lt;li&gt;PhoneGap is getting more and more popular.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;For those who don’t know, PhoneGap is an application framework that enables you to build native applications using HTML and JavaScript. It uses a web view to run your app, and you can then use Javascript to access underlying operating system features.&lt;/p&gt;
+
+&lt;p&gt;It allows you to develop without worrying about the platform. On the other hand you need to worry about the device’s native browser since they are all different. It’s just like your day to day web development.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-did-we-do&quot;&gt;What did we do?&lt;/h2&gt;
+
+&lt;p&gt;Tripl.it is a mashup between two words: Trip + Split. It tries to solve the pain of splitting expenses on a trip with friends. We made it simple: we needed to add trips, add friends to a trip, and add friends expenses on the trip. In the end, it would generate a report with who owes what to whom on the trip and to share it by email.&lt;/p&gt;
+
+&lt;p&gt;The following image shows the user interfaces, ordered in the intended user flow.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://dl.dropboxusercontent.com/u/4056020/phonegap/first-flow.png&quot; alt=&quot;Hackathon design&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We got stuck for a while trying to deploy to our devices, but by the end of the day we got some basic functionality and colours. It tasted like success.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-did-we-learn&quot;&gt;What did we learn?&lt;/h2&gt;
+
+&lt;p&gt;It didn’t feel like work. Everyone got to learn from technology to user experience and design. But the most important things we learned was that we could do it, we could jump in to (simple) mobile apps.&lt;/p&gt;
+
+&lt;h2 id=&quot;technical-details&quot;&gt;Technical Details&lt;/h2&gt;
+
+&lt;p&gt;Although it is HTML and CSS the app must have a native ‘feel’, with animations, like a slide, between pages. We wanted to do a single page app, and for that job, we used Backbone. We could have also used AngularJS or EmberJS. For storage, there are the browser’s databases: WebSQL and localstorage. We used a &lt;a href=&quot;https://github.com/MarrLiss/backbone-websql&quot;&gt;backbone plugin&lt;/a&gt; for websql.&lt;/p&gt;
+
+&lt;p&gt;We also used a &lt;a href=&quot;https://github.com/hypermurea/generator-phonegap&quot;&gt;yeoman generator&lt;/a&gt; to get an initial project structure. The package &lt;a href=&quot;https://github.com/gruntjs/grunt-contrib-connect&quot;&gt;grunt-contrib-connect&lt;/a&gt; made it simple to develop on Chrome. It’s an HTML app and it runs on every browser that supports websql (not Firefox).&lt;/p&gt;
+
+&lt;h2 id=&quot;the-following-weeks&quot;&gt;The following weeks&lt;/h2&gt;
+
+&lt;p&gt;In the following weeks I kept working on Tripl.it. I struggled with backbone and websql, with device bugs and with the PhoneGap API.&lt;/p&gt;
+
+&lt;p&gt;At some point I got a prototype ready and asked some friends to try it out. This was when we realised that the usability was just wrong. Take a look at the following images, it’s the design of this first prototype.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://dl.dropboxusercontent.com/u/4056020/phonegap/Flow.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Turns out mobile apps have nothing to do with web apps.&lt;/p&gt;
+
+&lt;h3 id=&quot;icons-werent-self-explanatory&quot;&gt;Icons weren’t self-explanatory&lt;/h3&gt;
+
+&lt;p&gt;The buttons have no text, they’re images. The problem with this is that the images need to clearly communicate what the button does. After you create a trip on Tripl.it you were presented with the following page.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://dl.dropboxusercontent.com/u/4056020/phonegap/old-timeline.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;What do you think the money button does? And the green button on the top right corner? Is it a confirmation of some kind?&lt;/p&gt;
+
+&lt;p&gt;What action would you take next?&lt;/p&gt;
+
+&lt;p&gt;The money button would take you to a page where you saw how much each person had. The green button on the top was to show who owes what to whom. And the action you should take next is to add an expense, by clicking the big green button with a ‘plus’ sign. You probably couldn’t figure this out at first, most people couldn’t, which made it our fault. Now take a look at what we did next.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://dl.dropboxusercontent.com/u/4056020/phonegap/last-main.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We removed the button from top right corner, it is now the report on the bottom right. Seeing how much everyone spent was merged into a view to manage friends, with a link on the bottom left. There are also some other minor improvements.&lt;/p&gt;
+
+&lt;p&gt;There is one button less on the page and no button on the top, so you don’t get confused about clicking there or on the big green, which represents the next action. We couldn’t figure this out without the users feedback and seeing them actually use it.&lt;/p&gt;
+
+&lt;h3 id=&quot;hard-to-click-buttons&quot;&gt;Hard-to-click buttons&lt;/h3&gt;
+
+&lt;p&gt;You are precise with a mouse, but on a touch screen things are different. Small buttons are hard to hit with a finger. We would see people desperately hitting the back button saying it didn’t work.&lt;/p&gt;
+
+&lt;p&gt;The buttons are images. To make the buttons work we increased the button size but keep the images the same size, so buttons still look small but are easier to hit since they take invisible space around the image (native apps need to do this too).&lt;/p&gt;
+
+&lt;p&gt;Also, since there is no visual feedback on the button being clicked (like changing the color), users would just keep hitting the buttons, even when the action was already in progress.&lt;/p&gt;
+
+&lt;h3 id=&quot;action-feedback&quot;&gt;Action feedback&lt;/h3&gt;
+
+&lt;p&gt;If their device is old, users may tolerate a slow app, but if they have a “latest generation something” they won’t. Loading all the phone’s contacts was a pain, I couldn’t use a native contact picker, so I was loading all the contacts on the fly through the contacts API. It was incredibly slow. At this point we had two options:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Load the contacts once and store them in localstorage for later use (it would be a problem to detect new contacts on the device).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Don’t load all the contacts, just give people a search input and start loading with a filter of two or three characters (the contacts API accepts a filter).&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The second option worked really well. People would be presented with an input and after they type the second character it would show the contacts immediately.&lt;/p&gt;
+
+&lt;h3 id=&quot;conventions&quot;&gt;Conventions&lt;/h3&gt;
+
+&lt;p&gt;Android and iOS users expect different conventions. iOS users expect to swipe items on a list to get more options, while Android users may expect long presses to do the trick. Our Android testers where just hitting everything attempting to find some more options. Some of them found the swipe by accident, but most of them never did.&lt;/p&gt;
+
+&lt;h3 id=&quot;animations&quot;&gt;Animations&lt;/h3&gt;
+
+&lt;p&gt;There are just two animations on Tripl.it and both are slides. One for changing the page, which slides left and right, and one on the lists, where some options appear. This is accomplished with hardware accelerated translations.&lt;/p&gt;
+
+&lt;p&gt;You can use hardware accelerated effects (like slide, rotate and scale) as much as you want. But we wanted things changing opacity and color, and that is really slow since there is no hardware acceleration for it. That’s very limiting in comparison with native apps, and even with desktop browsers. Of course there is the HTML canvas, but that’s a different story.&lt;/p&gt;
+
+&lt;p&gt;If you install Tripl.it you’ll notice the lists don’t have rounded border-radius like on the images. The reason for that is a bug on webkit browsers. When something is sliding (the hidden menu you slide left to show) it ignores it’s overflow (which is the list). We had to remove the border-radius so we could keep the animation.&lt;/p&gt;
+
+&lt;h3 id=&quot;others&quot;&gt;Others&lt;/h3&gt;
+
+&lt;p&gt;The list goes on and on. We changed both the views and the flow. We moved primary actions to the top right navigation and dismantled complex views with many buttons.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://dl.dropboxusercontent.com/u/4056020/phonegap/flow-last.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The previous image contains the current design. There’s still a long way to go but our understanding of mobile improved immensely.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;We designed the app to make it work for both Android and iOS. We underestimated the different conventions/patterns for each platform. Looking back, we probably should have focused on one platform or treat them as different apps. It is a clear mistake, and PhoneGap being multi platform was not a major benefit as we first thought.&lt;/p&gt;
+
+&lt;p&gt;PhoneGap has the obvious limitations of web vs native apps. Mobile browsers don’t support effects like blur, some types of animation are slow and if you want to support older versions of android it gets even worse. João suggested some animations he saw on other apps and we couldn’t use most of them because they’d look ‘laggy’.&lt;/p&gt;
+
+&lt;p&gt;Since it wasn’t supposed to be a fancy app, and it should have been fast to do, PhoneGap was indeed the right tool for the job. I’ll definitely use it again for small apps or prototyping. Maybe combining it with AngularJS or EmberJS should be interesting. There are some interesting &lt;a href=&quot;http://phonegap.com/app/&quot;&gt;apps built with PhoneGap&lt;/a&gt;. If you are a web developer looking to build a mobile app for your product, you should give it a try. You’ll probably reutilize a lot of code.&lt;/p&gt;
+
+&lt;p&gt;If you’re just looking to download the app, click &lt;a href=&quot;http://www.tripl.it/&quot;&gt;here&lt;/a&gt;. Don’t forget to leave feedback.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 04 Jun 2014 00:07:39 +0100</pubDate>
+        <link>http://gabrielpoca.com/2014/06/04/dipping-the-toes-in-phonegap.html</link>
+        <guid isPermaLink="true">http://gabrielpoca.com/2014/06/04/dipping-the-toes-in-phonegap.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Playing with Google Apps Script</title>
+        <description>&lt;p&gt;I wrote a google apps script for a spreadsheet.&lt;br /&gt;
+I’ve never done it before and I hope not to to do it again.&lt;/p&gt;
+
+&lt;p&gt;The reason I’ve wrote it was to automate some tasks on my dad’s budget spreadsheet:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Create a new row in a given place with a given formula.&lt;/li&gt;
+  &lt;li&gt;Duplicate a document used as template.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;insert-a-row&quot;&gt;Insert a row&lt;/h2&gt;
+
+&lt;p&gt;I created a template row and made it hidden. Then my function uses it to create &lt;br /&gt;
+a new one and place it in the right place. Everything gets copied,&lt;br /&gt;
+including the formulas.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;function newLine() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getActiveSheet();
+  sheet.insertRowsAfter(10, 1);
+  sheet.getRange(&quot;A10:F10&quot;).copyTo(sheet.getRange(&quot;A11:F11&quot;));
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;create-a-new-document&quot;&gt;Create a new document&lt;/h2&gt;
+
+&lt;p&gt;I created a default document to be used as a template for all budgets.&lt;br /&gt;
+Then I need a function to duplicate that document (teaching my dad&lt;br /&gt;
+wasn’t working).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;function newSheet() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getSheetByName(&#39;Default&#39;)
+  sheet.copyTo(spreadsheet).setName(&quot;Novo orçamento&quot;);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;wrap-it-up&quot;&gt;Wrap it up&lt;/h2&gt;
+
+&lt;p&gt;I made both functions available on the top menu, as seen in the image&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2013/12/google-apps-print.png&quot; alt=&quot;google-apps-pring&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;And the full script &lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;function newLine() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getActiveSheet();
+  sheet.insertRowsAfter(10, 1);
+  sheet.getRange(&quot;A10:F10&quot;).copyTo(sheet.getRange(&quot;A11:F11&quot;));
+}
+function newSheet() {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getSheetByName(&#39;Default&#39;)
+  sheet.copyTo(spreadsheet).setName(&quot;Novo orçamento&quot;);
+}
+
+// The onOpen function is executed automatically every time a Spreadsheet is loaded
+function onOpen() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var menuEntries = [];
+
+  menuEntries.push({name: &quot;Novo orçamento&quot;, functionName: &quot;newSheet&quot;});
+  menuEntries.push(null);
+  menuEntries.push({name: &quot;Adicionar novo produto&quot;, functionName: &quot;newLine&quot;});
+
+  ss.addMenu(&quot;Orçamento&quot;, menuEntries);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It took a whole morning.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 03 Dec 2013 00:52:00 +0000</pubDate>
+        <link>http://gabrielpoca.com/2013/12/03/playing-with-google-apps-script.html</link>
+        <guid isPermaLink="true">http://gabrielpoca.com/2013/12/03/playing-with-google-apps-script.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Jekyll, nginx and capistrano</title>
+        <description>&lt;p&gt;Yes, I’m blogging about blogging again. I’ve just updated this blog so I’m writing about it. Mostly I will tell you about my jekyll setup.&lt;/p&gt;
+
+&lt;p&gt;I’m running a &lt;a href=&quot;http://nginx.org/&quot;&gt;nginx&lt;/a&gt; server. I use github to store my code. I’ve setup &lt;a href=&quot;https://github.com/capistrano/capistrano&quot;&gt;capistrano&lt;/a&gt; for automatic deploys. Everything else is jekyll.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;How it works&lt;/strong&gt;: I update my blog. I push to github. I type &lt;code&gt;cap deploy&lt;/code&gt;. The code on the server is updated from github. It runs bundle install if needed on the server. It compiles jekyll and it’s done.&lt;/p&gt;
+
+&lt;h2 id=&quot;theme&quot;&gt;Theme&lt;/h2&gt;
+
+&lt;p&gt;I made it from scratch with html and sass (using compass and foundation like I always do). It was easy since I’m probably what you can call a web developer. Now I have a simple and organized theme to change when ever I want. &lt;/p&gt;
+
+&lt;p&gt;The tricky part was to setup sass. People normally run the &lt;code&gt;compass --watch&lt;/code&gt; stuff to compile sass to a folder that jekyll loads. You start compass, you start jekyll and it’s fine. You can even use Foreman to make it easier. There are two problems:&lt;/p&gt;
+
+&lt;p&gt;To use images in css I had to write they’re full path. That’s not god. The solution was to make jekyll process css, but since css was generated from sass there were all kind of syntax problems.&lt;/p&gt;
+
+&lt;p&gt;My solution was to use &lt;code&gt;gem &quot;jekyll-assets&quot;&lt;/code&gt;. It’s gives you the same as rails asset pipeline. This solved my problems.&lt;/p&gt;
+
+&lt;p&gt;Also I had to put the following code in a file on the plugins folder for sass compiler to load compass. This was a hard to find solution.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;Compass.sass_engine_options[:load_paths].each do |path|
+  Sass.load_paths &amp;lt;&amp;lt; path
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;tasks&quot;&gt;Tasks&lt;/h2&gt;
+
+&lt;p&gt;There is probably only one thing I like in octopress: &lt;strong&gt;Rakefile&lt;/strong&gt;. I used some of their code to make my life easy. The rest I got searching or writing myself.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;require &quot;rubygems&quot;
+require &quot;bundler/setup&quot;
+
+posts_dir = &quot;_posts&quot;
+
+desc &#39;Run the jekyll server&#39;
+task :server do
+  system &quot;jekyll serve -w&quot;
+end
+
+desc &#39;Run the jekyll dev server with drafts&#39;
+task :preview do
+  system &quot;jekyll serve -w --drafts&quot;
+end
+
+namespace :jekyll do
+  desc &#39;Delete generated _site files&#39;
+  task :clean do
+    system &quot;rm -fR _site&quot;
+  end
+
+  desc &#39;Clean temporary files and run the server&#39;
+  task :compile =&amp;gt; [:clean] do
+    system &quot;jekyll build&quot;
+  end
+end
+
+
+# usage rake new_post[my-new-post] or rake new_post[&#39;my new post&#39;] or rake new_post (defaults to &quot;new-post&quot;)
+desc &quot;Begin a new post in #{posts_dir}&quot;
+task :new_post, :title do |t, args|
+  if args.title
+    title = args.title
+  else
+    print &quot;Enter a title for your post: &quot;
+    title = STDIN.gets.chomp
+  end
+  mkdir_p &quot;#{posts_dir}&quot;
+  filename = &quot;#{posts_dir}/#{Time.now.strftime(&#39;%Y-%m-%d&#39;)}-#{title.to_url}.md&quot;
+  if File.exist?(filename)
+    abort(&quot;rake aborted!&quot;) if ask(&quot;#{filename} already exists. Do you want to overwrite?&quot;, [&#39;y&#39;, &#39;n&#39;]) == &#39;n&#39;
+  end
+  puts &quot;Creating new post: #{filename}&quot;
+  open(filename, &#39;w&#39;) do |post|
+    post.puts &quot;---&quot;
+    post.puts &quot;layout: post&quot;
+    post.puts &quot;title: \&quot;#{title.gsub(/&amp;amp;/,&#39;&amp;amp;amp;&#39;)}\&quot;&quot;
+    post.puts &quot;date: #{Time.now.strftime(&#39;%Y-%m-%d %H:%M&#39;)}&quot;
+    post.puts &quot;---&quot;
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;deploy&quot;&gt;Deploy&lt;/h2&gt;
+
+&lt;p&gt;To deploy I just run &lt;code&gt;cap deploy&lt;/code&gt;. Everything else &lt;a href=&quot;https://github.com/capistrano/capistrano&quot;&gt;capistrano&lt;/a&gt; takes care of.&lt;/p&gt;
+
+&lt;p&gt;I need two gems for this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;gem &#39;capistrano&#39;
+gem &#39;rvm-capistrano&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And the following code is my &lt;em&gt;deploy.rb&lt;/em&gt; file. Notice the &lt;code&gt;require &quot;rvm/capistrano&quot;&lt;/code&gt; it is needed if you use rvm.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;require &quot;rvm/capistrano&quot;
+require &quot;bundler/capistrano&quot;
+
+set :user, &#39;USERNAME&#39;
+set :deploy_to, &quot;SERVER FOLDER TO DEPLOY TO&quot;
+set :use_sudo, false
+
+set :application, &quot;APPLICATION NAME&quot;
+server &quot;SERVER_NAME&quot;, :app, :web, :db, :primary =&amp;gt; true
+
+ssh_options[:forward_agent] = true
+set :bundle_flags, &quot;--deployment&quot;
+ssh_options[:keys] = %w(PATH TO SSH KEY)
+set :scm, &#39;git&#39;
+set :repository,  &quot;REPOSITORY URL&quot;
+set :branch, &#39;master&#39;
+set :deploy_via, :remote_cache
+set :keep_releases, 5
+
+namespace :deploy do
+  [:start, :stop, :restart, :finalize_update].each do |t|
+    desc &quot;#{t} task is a no-op with jekyll&quot;
+    task t, :roles =&amp;gt; :app do ; end
+  end
+
+  # compile compass and then jekyll
+  task :finalize_update do
+    run &quot;cd #{latest_release}; rake jekyll:compile&quot;
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;problems&quot;&gt;Problems&lt;/h2&gt;
+
+&lt;p&gt;So I was using &lt;a href=&quot;http://octopress.org/&quot;&gt;Octopress&lt;/a&gt; for a while. Not that I write that much, but I try to. The problem with octopress is that it is too much. Seriously, it is too much. &lt;/p&gt;
+
+&lt;p&gt;Sass compilation time to slow.&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 10 Aug 2013 16:56:00 +0100</pubDate>
+        <link>http://gabrielpoca.com/2013/08/10/jekyll-nginx-capistrano.html</link>
+        <guid isPermaLink="true">http://gabrielpoca.com/2013/08/10/jekyll-nginx-capistrano.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>About Codebits Last Year</title>
+        <description>&lt;p&gt;Last year I attended &lt;a href=&quot;https://codebits.eu&quot;&gt;codebits&lt;/a&gt; for the first time. It was amazing! It’s the technology conference you shouldn’t miss if you’re in Portugal. &lt;/p&gt;
+
+&lt;p&gt;It’s not a three days straight in front of a computer wearing smelly clothes. It may seem like, it may also be like it, but it is much more. Just remembering the awesome nyan cat moment. The hunt for badges. Stuff to win. O’Reilly’s book at half the price. Many talks and challenges. And strange people, just how I like it.&lt;/p&gt;
+
+&lt;p&gt;I came back with a bag full of shirts and great ideas for the next year. Looking forward to see what’s new. Beware the tacos!&lt;/p&gt;
+</description>
+        <pubDate>Fri, 24 Aug 2012 00:00:00 +0100</pubDate>
+        <link>http://gabrielpoca.com/2012/08/24/about_codebits_last_year.html</link>
+        <guid isPermaLink="true">http://gabrielpoca.com/2012/08/24/about_codebits_last_year.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>About Jekyll, Github Pages and Plugins</title>
+        <description>&lt;p&gt;It looks like everyone is talking about jekyll and github pages so I’m also going to let my tips around here.&lt;/p&gt;
+
+&lt;p&gt;Github pages doesn’t allow jekyll pluggins, you may not need them or you may have to find your way around like I did.&lt;/p&gt;
+
+&lt;p&gt;I haven’t actually found a way around, to use plugins I have to generate my blog before and push it to the repo. The solution is to have a branch with my blog’s source files and push the output to the master branch.&lt;/p&gt;
+
+&lt;p&gt;I added &lt;em&gt;site&lt;/em&gt; to .gitignore and now its magic! I can switch to my source branch, do all the alterations, generate the blog, go back to the master branch and move the files from &lt;em&gt;site&lt;/em&gt; to the root folder and push the updated blog.&lt;/p&gt;
+
+</description>
+        <pubDate>Sun, 08 Jul 2012 00:00:00 +0100</pubDate>
+        <link>http://gabrielpoca.com/2012/07/08/about_jekyll_and_github_pages_and_plugins.html</link>
+        <guid isPermaLink="true">http://gabrielpoca.com/2012/07/08/about_jekyll_and_github_pages_and_plugins.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>MacVim Tab Navigation</title>
+        <description>&lt;p&gt;Very usefull tip I found to have CMD+Number tab navigation in MacVim.&lt;/p&gt;
+
+&lt;p&gt;Past the code bellow in vimrc.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;if has(&quot;gui_macvim&quot;)
+	map &amp;amp;ltD-1&amp;amp;gt :tabfirst&amp;amp;ltCr&amp;amp;gt
+	map &amp;amp;ltD-2&amp;amp;gt :tabfirst&amp;amp;ltCr&amp;amp;gtgt
+	map &amp;amp;ltD-3&amp;amp;gt :tabfirst&amp;amp;ltCr&amp;amp;gt3gt
+	map &amp;amp;ltD-4&amp;amp;gt :tabfirst&amp;amp;ltCr&amp;amp;gt4gt
+	map &amp;amp;ltD-5&amp;amp;gt :tabfirst&amp;amp;ltCr&amp;amp;gt5gt
+	map &amp;amp;ltD-6&amp;amp;gt :tabfirst&amp;amp;ltCr&amp;amp;gt6gt
+	map &amp;amp;ltD-7&amp;amp;gt :tabfirst&amp;amp;ltCr&amp;amp;gt7gt
+	map &amp;amp;ltD-8&amp;amp;gt :tabfirst&amp;amp;ltCr&amp;amp;gt8gt
+	map &amp;amp;ltD-9&amp;amp;gt :tabfirst&amp;amp;ltCr&amp;amp;gt9gt
+endif
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Sat, 26 May 2012 00:00:00 +0100</pubDate>
+        <link>http://gabrielpoca.com/2012/05/26/macvim-tab-navigation.html</link>
+        <guid isPermaLink="true">http://gabrielpoca.com/2012/05/26/macvim-tab-navigation.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Magnet Links and rtorrent</title>
+        <description>&lt;p&gt;There seems to bem some confusion about magnet links in &lt;a href=&quot;http://libtorrent.rakshasa.no&quot;&gt;rtorrent&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;It works without patch, just type the magnetic link directly:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;load.normal&amp;gt; magnet:?xt=urn:btih:cf87cc0d6b0db21d2221694effae3758479ad4d1&amp;amp;dn=Dan+Bull+-+Sharing+Is+Caring+%2B+bonus+tracks&amp;amp;tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&amp;amp;tr=udp%3A%2F%2Ftracker.publicbt.com%3A80&amp;amp;tr=udp%3A%2F%2Ftracker.ccc.de%3A80
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I’m now finishing a ruby script to download from piratebay and send to rtorrent.&lt;/p&gt;
+
+&lt;p&gt;To install rtorrent with MacPorts just run:&lt;/p&gt;
+
+&lt;pre&gt;
+sudo port install libtorrent
+sudo port install rtorrent
+&lt;/pre&gt;
+
+</description>
+        <pubDate>Tue, 24 Apr 2012 00:00:00 +0100</pubDate>
+        <link>http://gabrielpoca.com/2012/04/24/magnet-links-and-rtorrent.html</link>
+        <guid isPermaLink="true">http://gabrielpoca.com/2012/04/24/magnet-links-and-rtorrent.html</guid>
+        
+        
+      </item>
+    
   </channel>
 </rss>

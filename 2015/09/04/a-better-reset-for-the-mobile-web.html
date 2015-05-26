@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>A better reset for the mobile web</title>
+  <meta name="description" content="This blog post was written for Group Buddies Blog.">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://gabrielpoca.com/2015/09/04/a-better-reset-for-the-mobile-web.html">
+  <link rel="alternate" type="application/rss+xml" title="Gabriel Poça" href="http://gabrielpoca.com/feed.xml" />
+
+  <!--<link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,700,900,400italic,300italic' rel='stylesheet' type='text/css'>-->
+  <link href='http://fonts.googleapis.com/css?family=Raleway:700,400|Merriweather:400italic,400,300italic,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js">
+  </script>
+
+  <script src="/js/app.js">
+  </script>
+</head>
+
+  <body>
+    <div class="Layout">
+      <div class="Layout-sidebar">
+        <div class="Sidebar">
+  <div class="Sidebar-contentWrapper">
+    <div class="Sidebar-picture">
+      <img class="Gravatar" alt="Profile Picture" src="https://www.gravatar.com/avatar/2c4b850cf6a0a3be7a18c7840bc12435?s=600&r=g&d=mm"></img>
+    </div>
+    <h2 class="Sidebar-title">Gabriel Poça</h2>
+    <nav class="Sidebar-social">
+      <ul>
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://github.com/gabrielpoca"
+            target="_blank"><i class="fa fa-github"></i></a>
+        </li>
+        
+
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://twitter.com/gabrielgpoca"
+            target="_blank"><i class="fa fa-twitter"></i></a>
+        </li>
+        
+
+        <li class="Sidebar-socialItem">
+          <a href="/feed.xml"
+            target="_blank"><i class="fa fa-rss"></i></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+      </div>
+
+      <div class="Layout-content">
+        <div class="Page">
+
+  <div class="Post">
+    <header class="Post-header">
+      <h1 class="Post-title">A better reset for the mobile web</h1>
+      <p class="post-meta">Sep 4, 2015</p>
+    </header>
+
+    <article class="Post-content">
+      <p>This blog post was written for <a href="https://blog.groupbuddies.com/posts/53-a-better-reset-for-the-mobile-web">Group Buddies Blog</a>.</p>
+
+<p>Mobile web applications are expected to work differently from desktop applications. They need to feel responsive to the user’s touch. Having worked on a couple of mobile web applications in the last year, I found that I always start by changing the browser’s default appearance and behaviour. This article contains my setup to make a mobile web application feel more like a native one.</p>
+
+<h1 id="css-reset">CSS Reset</h1>
+
+<p>The following is a set of rules I use in every mobile web application. Keep in mind that some of these are my personal preference.</p>
+
+<pre><code class="language-css">*, *:before, *:after {
+  /* suppressing the tap highlight */
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+
+  /* this is a personal preference */
+  box-sizing: border-box;
+  vertical-align: top;
+  padding: 0;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+*:focus {
+  /* the default outline doesn't play well with a mobile application,
+     I usually start without it,
+     but don't forget to research further to make your mobile app accessible. */
+  outline: 0;
+}
+
+input {
+  border-radius: 0;
+}
+
+html, body {
+  /* we don't want to allow users to select text everywhere,
+     you can enable it on the places you think appropriate */
+  user-select: none;
+}
+</code></pre>
+
+<p>When using a mobile framework, like <a href="http://ionicframework.com/">ionic</a>, you usually don’t need to worry about this, it’s already there. Also, remember to run these styles through <a href="https://github.com/postcss/autoprefixer">autoprefixer</a>, since you’ll need the vendor prefixes.</p>
+
+<h1 id="prevent-user-scaling">Prevent user scaling</h1>
+
+<p>To adjust the browser’s viewport for a mobile application you can use the following meta tag:</p>
+
+<pre><code class="language-html">&lt;meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"&gt;
+</code></pre>
+
+<p>The <code>width=device-width</code> part sets the width of the viewport as the width of the device.</p>
+
+<p>The <code>initial-scale</code> property controls the zoom level when the page is first loaded, and the <code>user-scalable</code> property prevents the user from zooming in and out on your mobile application.</p>
+
+<h1 id="overscroll">Overscroll</h1>
+
+<p>Most mobile browsers have an “elastic” overscroll for the entire page. This is the reason why, in some web sites, you can pull down the header (that’s fixed on the top), revealing a empty layer behind the application. You usually don’t want this.</p>
+
+<p>On <a href="https://cordova.apache.org/">Apache Cordova</a>, pasting the following rules in the <code>config.xml</code> file should do the trick of disabling the overscroll.</p>
+
+<pre><code class="language-xml">&lt;preference name="webviewbounce" value="false"/&gt;
+&lt;preference name="DisallowOverscroll" value="true"/&gt;
+</code></pre>
+
+<p>On a regular browser you can disable the <code>touchmove</code> on the document, which obtains the same result.</p>
+
+<pre><code class="language-javascript">$('body').on('touchmove', function (e) {
+  if (! $('.scrollable').has($(e.target)).length)
+    e.preventDefault();
+});
+</code></pre>
+
+<p>Even though you don’t want a full page overscroll, some places of the application may require scroll. For those places you can enable it with the following rules.</p>
+
+<pre><code class="language-css">.scrollable {
+  -webkit-overflow-scrolling: touch;
+  overflow: scroll;
+}
+</code></pre>
+
+<p>Notice that on the JavaScript we are excluding the class <code>scrollable</code>. You need to add this class to the places you want scrollable content.<br />
+The <code>-webkit-overflow-scrolling: touch;</code> enables the “momentum” style scrolling.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>The tips I’ve shared should be helpful for every application. But it doesn’t stop here. There is much more you can do to improve the look and feel of a mobile web application, but I’ll leave that for another blog post.</p>
+
+<p>For those who don’t see the web as a viable platform for mobile, give it another chance. You might end up feeling utterly surprised.</p>
+
+    </article>
+  </div>
+</div>
+
+        <footer class="Footer">
+  <div class="Page">
+    <hr class="Line">
+
+    <p class="Paragraph">
+      Interested in working together?
+      I'm available
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">for hire!</a>
+      Reach me on
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">Twitter</a>.
+    </p>
+
+    <p class="Paragraph">
+      <span class="Text Text-small">
+        Thank you for visting. Feel free to engage with me on
+        <a href="https://twitter.com/gabrielgpoca">Twitter</a>.
+      </span>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-48359304-1', 'auto');
+ga('send', 'pageview');
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>

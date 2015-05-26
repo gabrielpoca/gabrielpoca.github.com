@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Jekyll, nginx and capistrano</title>
+  <meta name="description" content="Yes, I’m blogging about blogging again. I’ve just updated this blog so I’m writing about it. Mostly I will tell you about my jekyll setup.">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://gabrielpoca.com/2013/08/10/jekyll-nginx-capistrano.html">
+  <link rel="alternate" type="application/rss+xml" title="Gabriel Poça" href="http://gabrielpoca.com/feed.xml" />
+
+  <!--<link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,700,900,400italic,300italic' rel='stylesheet' type='text/css'>-->
+  <link href='http://fonts.googleapis.com/css?family=Raleway:700,400|Merriweather:400italic,400,300italic,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js">
+  </script>
+
+  <script src="/js/app.js">
+  </script>
+</head>
+
+  <body>
+    <div class="Layout">
+      <div class="Layout-sidebar">
+        <div class="Sidebar">
+  <div class="Sidebar-contentWrapper">
+    <div class="Sidebar-picture">
+      <img class="Gravatar" alt="Profile Picture" src="https://www.gravatar.com/avatar/2c4b850cf6a0a3be7a18c7840bc12435?s=600&r=g&d=mm"></img>
+    </div>
+    <h2 class="Sidebar-title">Gabriel Poça</h2>
+    <nav class="Sidebar-social">
+      <ul>
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://github.com/gabrielpoca"
+            target="_blank"><i class="fa fa-github"></i></a>
+        </li>
+        
+
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://twitter.com/gabrielgpoca"
+            target="_blank"><i class="fa fa-twitter"></i></a>
+        </li>
+        
+
+        <li class="Sidebar-socialItem">
+          <a href="/feed.xml"
+            target="_blank"><i class="fa fa-rss"></i></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+      </div>
+
+      <div class="Layout-content">
+        <div class="Page">
+
+  <div class="Post">
+    <header class="Post-header">
+      <h1 class="Post-title">Jekyll, nginx and capistrano</h1>
+      <p class="post-meta">Aug 10, 2013</p>
+    </header>
+
+    <article class="Post-content">
+      <p>Yes, I’m blogging about blogging again. I’ve just updated this blog so I’m writing about it. Mostly I will tell you about my jekyll setup.</p>
+
+<p>I’m running a <a href="http://nginx.org/">nginx</a> server. I use github to store my code. I’ve setup <a href="https://github.com/capistrano/capistrano">capistrano</a> for automatic deploys. Everything else is jekyll.</p>
+
+<p><strong>How it works</strong>: I update my blog. I push to github. I type <code>cap deploy</code>. The code on the server is updated from github. It runs bundle install if needed on the server. It compiles jekyll and it’s done.</p>
+
+<h2 id="theme">Theme</h2>
+
+<p>I made it from scratch with html and sass (using compass and foundation like I always do). It was easy since I’m probably what you can call a web developer. Now I have a simple and organized theme to change when ever I want. </p>
+
+<p>The tricky part was to setup sass. People normally run the <code>compass --watch</code> stuff to compile sass to a folder that jekyll loads. You start compass, you start jekyll and it’s fine. You can even use Foreman to make it easier. There are two problems:</p>
+
+<p>To use images in css I had to write they’re full path. That’s not god. The solution was to make jekyll process css, but since css was generated from sass there were all kind of syntax problems.</p>
+
+<p>My solution was to use <code>gem "jekyll-assets"</code>. It’s gives you the same as rails asset pipeline. This solved my problems.</p>
+
+<p>Also I had to put the following code in a file on the plugins folder for sass compiler to load compass. This was a hard to find solution.</p>
+
+<pre><code class="language-ruby">Compass.sass_engine_options[:load_paths].each do |path|
+  Sass.load_paths &lt;&lt; path
+end
+</code></pre>
+
+<h2 id="tasks">Tasks</h2>
+
+<p>There is probably only one thing I like in octopress: <strong>Rakefile</strong>. I used some of their code to make my life easy. The rest I got searching or writing myself.</p>
+
+<pre><code class="language-ruby">require "rubygems"
+require "bundler/setup"
+
+posts_dir = "_posts"
+
+desc 'Run the jekyll server'
+task :server do
+  system "jekyll serve -w"
+end
+
+desc 'Run the jekyll dev server with drafts'
+task :preview do
+  system "jekyll serve -w --drafts"
+end
+
+namespace :jekyll do
+  desc 'Delete generated _site files'
+  task :clean do
+    system "rm -fR _site"
+  end
+
+  desc 'Clean temporary files and run the server'
+  task :compile =&gt; [:clean] do
+    system "jekyll build"
+  end
+end
+
+
+# usage rake new_post[my-new-post] or rake new_post['my new post'] or rake new_post (defaults to "new-post")
+desc "Begin a new post in #{posts_dir}"
+task :new_post, :title do |t, args|
+  if args.title
+    title = args.title
+  else
+    print "Enter a title for your post: "
+    title = STDIN.gets.chomp
+  end
+  mkdir_p "#{posts_dir}"
+  filename = "#{posts_dir}/#{Time.now.strftime('%Y-%m-%d')}-#{title.to_url}.md"
+  if File.exist?(filename)
+    abort("rake aborted!") if ask("#{filename} already exists. Do you want to overwrite?", ['y', 'n']) == 'n'
+  end
+  puts "Creating new post: #{filename}"
+  open(filename, 'w') do |post|
+    post.puts "---"
+    post.puts "layout: post"
+    post.puts "title: \"#{title.gsub(/&amp;/,'&amp;amp;')}\""
+    post.puts "date: #{Time.now.strftime('%Y-%m-%d %H:%M')}"
+    post.puts "---"
+  end
+end
+</code></pre>
+
+<h2 id="deploy">Deploy</h2>
+
+<p>To deploy I just run <code>cap deploy</code>. Everything else <a href="https://github.com/capistrano/capistrano">capistrano</a> takes care of.</p>
+
+<p>I need two gems for this:</p>
+
+<pre><code class="language-ruby">gem 'capistrano'
+gem 'rvm-capistrano'
+</code></pre>
+
+<p>And the following code is my <em>deploy.rb</em> file. Notice the <code>require "rvm/capistrano"</code> it is needed if you use rvm.</p>
+
+<pre><code class="language-ruby">require "rvm/capistrano"
+require "bundler/capistrano"
+
+set :user, 'USERNAME'
+set :deploy_to, "SERVER FOLDER TO DEPLOY TO"
+set :use_sudo, false
+
+set :application, "APPLICATION NAME"
+server "SERVER_NAME", :app, :web, :db, :primary =&gt; true
+
+ssh_options[:forward_agent] = true
+set :bundle_flags, "--deployment"
+ssh_options[:keys] = %w(PATH TO SSH KEY)
+set :scm, 'git'
+set :repository,  "REPOSITORY URL"
+set :branch, 'master'
+set :deploy_via, :remote_cache
+set :keep_releases, 5
+
+namespace :deploy do
+  [:start, :stop, :restart, :finalize_update].each do |t|
+    desc "#{t} task is a no-op with jekyll"
+    task t, :roles =&gt; :app do ; end
+  end
+
+  # compile compass and then jekyll
+  task :finalize_update do
+    run "cd #{latest_release}; rake jekyll:compile"
+  end
+end
+</code></pre>
+
+<h2 id="problems">Problems</h2>
+
+<p>So I was using <a href="http://octopress.org/">Octopress</a> for a while. Not that I write that much, but I try to. The problem with octopress is that it is too much. Seriously, it is too much. </p>
+
+<p>Sass compilation time to slow.</p>
+
+
+    </article>
+  </div>
+</div>
+
+        <footer class="Footer">
+  <div class="Page">
+    <hr class="Line">
+
+    <p class="Paragraph">
+      Interested in working together?
+      I'm available
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">for hire!</a>
+      Reach me on
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">Twitter</a>.
+    </p>
+
+    <p class="Paragraph">
+      <span class="Text Text-small">
+        Thank you for visting. Feel free to engage with me on
+        <a href="https://twitter.com/gabrielgpoca">Twitter</a>.
+      </span>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-48359304-1', 'auto');
+ga('send', 'pageview');
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>

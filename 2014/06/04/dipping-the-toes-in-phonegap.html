@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Dipping the toes in Phonegap</title>
+  <meta name="description" content="This blog post was written for Group Buddies Blog.">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://gabrielpoca.com/2014/06/04/dipping-the-toes-in-phonegap.html">
+  <link rel="alternate" type="application/rss+xml" title="Gabriel Poça" href="http://gabrielpoca.com/feed.xml" />
+
+  <!--<link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,700,900,400italic,300italic' rel='stylesheet' type='text/css'>-->
+  <link href='http://fonts.googleapis.com/css?family=Raleway:700,400|Merriweather:400italic,400,300italic,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js">
+  </script>
+
+  <script src="/js/app.js">
+  </script>
+</head>
+
+  <body>
+    <div class="Layout">
+      <div class="Layout-sidebar">
+        <div class="Sidebar">
+  <div class="Sidebar-contentWrapper">
+    <div class="Sidebar-picture">
+      <img class="Gravatar" alt="Profile Picture" src="https://www.gravatar.com/avatar/2c4b850cf6a0a3be7a18c7840bc12435?s=600&r=g&d=mm"></img>
+    </div>
+    <h2 class="Sidebar-title">Gabriel Poça</h2>
+    <nav class="Sidebar-social">
+      <ul>
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://github.com/gabrielpoca"
+            target="_blank"><i class="fa fa-github"></i></a>
+        </li>
+        
+
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://twitter.com/gabrielgpoca"
+            target="_blank"><i class="fa fa-twitter"></i></a>
+        </li>
+        
+
+        <li class="Sidebar-socialItem">
+          <a href="/feed.xml"
+            target="_blank"><i class="fa fa-rss"></i></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+      </div>
+
+      <div class="Layout-content">
+        <div class="Page">
+
+  <div class="Post">
+    <header class="Post-header">
+      <h1 class="Post-title">Dipping the toes in Phonegap</h1>
+      <p class="post-meta">Jun 4, 2014</p>
+    </header>
+
+    <article class="Post-content">
+      <p>This blog post was written for <a href="http://blog.groupbuddies.com/posts/35-dipping-the-toes-in-phonegap">Group Buddies Blog</a>.</p>
+
+<p>Like most developers I know, there is a list of things I want to learn and experiment with. Mobile development was on the top of that list until last December, when we took a day off for an internal hackathon and some of us got to work on a mobile app.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/4056020/phonegap/working.jpg" alt="Team Tripl.it" /></p>
+
+<h2 id="first-big-decision-why-phonegap">First big decision: Why PhoneGap?</h2>
+
+<p>There is plenty technology available for mobile development. You can go native or you can grab some framework. We chose PhoneGap for a few reasons:</p>
+
+<ol>
+  <li>It’s open source.</li>
+  <li>It’s multi-platform. Even though we ended up focusing on iOS, we didn’t have a plan at first (more on this subject ahead).</li>
+  <li>It’s HTML, CSS and JavaScript. We eat this for breakfast, how hard could it be?</li>
+  <li>I didn’t want to look at Objective-C, it hurts my eyes.</li>
+  <li>PhoneGap is getting more and more popular.</li>
+</ol>
+
+<p>For those who don’t know, PhoneGap is an application framework that enables you to build native applications using HTML and JavaScript. It uses a web view to run your app, and you can then use Javascript to access underlying operating system features.</p>
+
+<p>It allows you to develop without worrying about the platform. On the other hand you need to worry about the device’s native browser since they are all different. It’s just like your day to day web development.</p>
+
+<h2 id="what-did-we-do">What did we do?</h2>
+
+<p>Tripl.it is a mashup between two words: Trip + Split. It tries to solve the pain of splitting expenses on a trip with friends. We made it simple: we needed to add trips, add friends to a trip, and add friends expenses on the trip. In the end, it would generate a report with who owes what to whom on the trip and to share it by email.</p>
+
+<p>The following image shows the user interfaces, ordered in the intended user flow.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/4056020/phonegap/first-flow.png" alt="Hackathon design" /></p>
+
+<p>We got stuck for a while trying to deploy to our devices, but by the end of the day we got some basic functionality and colours. It tasted like success.</p>
+
+<h2 id="what-did-we-learn">What did we learn?</h2>
+
+<p>It didn’t feel like work. Everyone got to learn from technology to user experience and design. But the most important things we learned was that we could do it, we could jump in to (simple) mobile apps.</p>
+
+<h2 id="technical-details">Technical Details</h2>
+
+<p>Although it is HTML and CSS the app must have a native ‘feel’, with animations, like a slide, between pages. We wanted to do a single page app, and for that job, we used Backbone. We could have also used AngularJS or EmberJS. For storage, there are the browser’s databases: WebSQL and localstorage. We used a <a href="https://github.com/MarrLiss/backbone-websql">backbone plugin</a> for websql.</p>
+
+<p>We also used a <a href="https://github.com/hypermurea/generator-phonegap">yeoman generator</a> to get an initial project structure. The package <a href="https://github.com/gruntjs/grunt-contrib-connect">grunt-contrib-connect</a> made it simple to develop on Chrome. It’s an HTML app and it runs on every browser that supports websql (not Firefox).</p>
+
+<h2 id="the-following-weeks">The following weeks</h2>
+
+<p>In the following weeks I kept working on Tripl.it. I struggled with backbone and websql, with device bugs and with the PhoneGap API.</p>
+
+<p>At some point I got a prototype ready and asked some friends to try it out. This was when we realised that the usability was just wrong. Take a look at the following images, it’s the design of this first prototype.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/4056020/phonegap/Flow.png" alt="" /></p>
+
+<p>Turns out mobile apps have nothing to do with web apps.</p>
+
+<h3 id="icons-werent-self-explanatory">Icons weren’t self-explanatory</h3>
+
+<p>The buttons have no text, they’re images. The problem with this is that the images need to clearly communicate what the button does. After you create a trip on Tripl.it you were presented with the following page.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/4056020/phonegap/old-timeline.png" alt="" /></p>
+
+<p>What do you think the money button does? And the green button on the top right corner? Is it a confirmation of some kind?</p>
+
+<p>What action would you take next?</p>
+
+<p>The money button would take you to a page where you saw how much each person had. The green button on the top was to show who owes what to whom. And the action you should take next is to add an expense, by clicking the big green button with a ‘plus’ sign. You probably couldn’t figure this out at first, most people couldn’t, which made it our fault. Now take a look at what we did next.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/4056020/phonegap/last-main.png" alt="" /></p>
+
+<p>We removed the button from top right corner, it is now the report on the bottom right. Seeing how much everyone spent was merged into a view to manage friends, with a link on the bottom left. There are also some other minor improvements.</p>
+
+<p>There is one button less on the page and no button on the top, so you don’t get confused about clicking there or on the big green, which represents the next action. We couldn’t figure this out without the users feedback and seeing them actually use it.</p>
+
+<h3 id="hard-to-click-buttons">Hard-to-click buttons</h3>
+
+<p>You are precise with a mouse, but on a touch screen things are different. Small buttons are hard to hit with a finger. We would see people desperately hitting the back button saying it didn’t work.</p>
+
+<p>The buttons are images. To make the buttons work we increased the button size but keep the images the same size, so buttons still look small but are easier to hit since they take invisible space around the image (native apps need to do this too).</p>
+
+<p>Also, since there is no visual feedback on the button being clicked (like changing the color), users would just keep hitting the buttons, even when the action was already in progress.</p>
+
+<h3 id="action-feedback">Action feedback</h3>
+
+<p>If their device is old, users may tolerate a slow app, but if they have a “latest generation something” they won’t. Loading all the phone’s contacts was a pain, I couldn’t use a native contact picker, so I was loading all the contacts on the fly through the contacts API. It was incredibly slow. At this point we had two options:</p>
+
+<ol>
+  <li>
+    <p>Load the contacts once and store them in localstorage for later use (it would be a problem to detect new contacts on the device).</p>
+  </li>
+  <li>
+    <p>Don’t load all the contacts, just give people a search input and start loading with a filter of two or three characters (the contacts API accepts a filter).</p>
+  </li>
+</ol>
+
+<p>The second option worked really well. People would be presented with an input and after they type the second character it would show the contacts immediately.</p>
+
+<h3 id="conventions">Conventions</h3>
+
+<p>Android and iOS users expect different conventions. iOS users expect to swipe items on a list to get more options, while Android users may expect long presses to do the trick. Our Android testers where just hitting everything attempting to find some more options. Some of them found the swipe by accident, but most of them never did.</p>
+
+<h3 id="animations">Animations</h3>
+
+<p>There are just two animations on Tripl.it and both are slides. One for changing the page, which slides left and right, and one on the lists, where some options appear. This is accomplished with hardware accelerated translations.</p>
+
+<p>You can use hardware accelerated effects (like slide, rotate and scale) as much as you want. But we wanted things changing opacity and color, and that is really slow since there is no hardware acceleration for it. That’s very limiting in comparison with native apps, and even with desktop browsers. Of course there is the HTML canvas, but that’s a different story.</p>
+
+<p>If you install Tripl.it you’ll notice the lists don’t have rounded border-radius like on the images. The reason for that is a bug on webkit browsers. When something is sliding (the hidden menu you slide left to show) it ignores it’s overflow (which is the list). We had to remove the border-radius so we could keep the animation.</p>
+
+<h3 id="others">Others</h3>
+
+<p>The list goes on and on. We changed both the views and the flow. We moved primary actions to the top right navigation and dismantled complex views with many buttons.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/4056020/phonegap/flow-last.png" alt="" /></p>
+
+<p>The previous image contains the current design. There’s still a long way to go but our understanding of mobile improved immensely.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>We designed the app to make it work for both Android and iOS. We underestimated the different conventions/patterns for each platform. Looking back, we probably should have focused on one platform or treat them as different apps. It is a clear mistake, and PhoneGap being multi platform was not a major benefit as we first thought.</p>
+
+<p>PhoneGap has the obvious limitations of web vs native apps. Mobile browsers don’t support effects like blur, some types of animation are slow and if you want to support older versions of android it gets even worse. João suggested some animations he saw on other apps and we couldn’t use most of them because they’d look ‘laggy’.</p>
+
+<p>Since it wasn’t supposed to be a fancy app, and it should have been fast to do, PhoneGap was indeed the right tool for the job. I’ll definitely use it again for small apps or prototyping. Maybe combining it with AngularJS or EmberJS should be interesting. There are some interesting <a href="http://phonegap.com/app/">apps built with PhoneGap</a>. If you are a web developer looking to build a mobile app for your product, you should give it a try. You’ll probably reutilize a lot of code.</p>
+
+<p>If you’re just looking to download the app, click <a href="http://www.tripl.it/">here</a>. Don’t forget to leave feedback.</p>
+
+    </article>
+  </div>
+</div>
+
+        <footer class="Footer">
+  <div class="Page">
+    <hr class="Line">
+
+    <p class="Paragraph">
+      Interested in working together?
+      I'm available
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">for hire!</a>
+      Reach me on
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">Twitter</a>.
+    </p>
+
+    <p class="Paragraph">
+      <span class="Text Text-small">
+        Thank you for visting. Feel free to engage with me on
+        <a href="https://twitter.com/gabrielgpoca">Twitter</a>.
+      </span>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-48359304-1', 'auto');
+ga('send', 'pageview');
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>

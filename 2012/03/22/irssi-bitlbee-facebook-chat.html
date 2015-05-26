@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Irssi, Bitlbee and Facebook Chat</title>
+  <meta name="description" content="So today I managed to connect Irssi to Facebook Chat through Bitlbee. Irssi is an awesome command line IRC client, I’ve set it up on a server and with ssh an...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://gabrielpoca.com/2012/03/22/irssi-bitlbee-facebook-chat.html">
+  <link rel="alternate" type="application/rss+xml" title="Gabriel Poça" href="http://gabrielpoca.com/feed.xml" />
+
+  <!--<link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,700,900,400italic,300italic' rel='stylesheet' type='text/css'>-->
+  <link href='http://fonts.googleapis.com/css?family=Raleway:700,400|Merriweather:400italic,400,300italic,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js">
+  </script>
+
+  <script src="/js/app.js">
+  </script>
+</head>
+
+  <body>
+    <div class="Layout">
+      <div class="Layout-sidebar">
+        <div class="Sidebar">
+  <div class="Sidebar-contentWrapper">
+    <div class="Sidebar-picture">
+      <img class="Gravatar" alt="Profile Picture" src="https://www.gravatar.com/avatar/2c4b850cf6a0a3be7a18c7840bc12435?s=600&r=g&d=mm"></img>
+    </div>
+    <h2 class="Sidebar-title">Gabriel Poça</h2>
+    <nav class="Sidebar-social">
+      <ul>
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://github.com/gabrielpoca"
+            target="_blank"><i class="fa fa-github"></i></a>
+        </li>
+        
+
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://twitter.com/gabrielgpoca"
+            target="_blank"><i class="fa fa-twitter"></i></a>
+        </li>
+        
+
+        <li class="Sidebar-socialItem">
+          <a href="/feed.xml"
+            target="_blank"><i class="fa fa-rss"></i></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+      </div>
+
+      <div class="Layout-content">
+        <div class="Page">
+
+  <div class="Post">
+    <header class="Post-header">
+      <h1 class="Post-title">Irssi, Bitlbee and Facebook Chat</h1>
+      <p class="post-meta">Mar 22, 2012</p>
+    </header>
+
+    <article class="Post-content">
+      <p>So today I managed to connect <a href="http://www.irssi.org/">Irssi</a> to Facebook Chat through Bitlbee. Irssi is an awesome command line IRC client, I’ve set it up on a server and with ssh and screen. Here I explain how to setup irssi and  bitlbee with facebook chat.</p>
+
+<p>Lets get Irssi and Bitlbee.</p>
+
+<pre><code>sudo port install irssi
+sudo port install bitlbee
+</code></pre>
+
+<p>Then configure bitlbee.</p>
+
+<pre><code>cp /opt/local/etc/bitlbee/bitlbee.conf.sample /opt/local/etc/bitlbee/bitlbee.conf
+</code></pre>
+
+<p>Open bitlbee.conf and search/edit to <code>RunMode = ForkDaemon</code>. Now start bittlbee and irssi.</p>
+
+<pre><code>bitlebee
+irssi
+</code></pre>
+
+<p>Right now you’re in irssi’s console mode. Run the following to get things working. These commands should be easy to understand.</p>
+
+<pre><code>/connect localhost
+account add jabber username@chat.facebook.com password
+</code></pre>
+
+<p>The following renames friend list default names to readable names.</p>
+
+<pre><code>account fb set nick_source full_name
+</code></pre>
+
+<p>Start the chat.</p>
+
+<pre><code>account on
+</code></pre>
+
+<p>And it is done. Now you should learn about irssi. Quick tip to start a conversation:</p>
+
+<pre><code>/query Name
+</code></pre>
+
+<p>To chat in a new window run <code>/window new hide</code> before.<br />
+Bellow is a screenshot of mine.</p>
+
+<p><img src="/images/2012/03/captura-de-ecracc83-2012-03-10-acc80s-22-28-47.png" alt="Irssi Screenshot" /></p>
+
+<p>There is plenty of information about irssi. About bitlbee and Facebook here are some useful resources:</p>
+
+<p><a href="http://wiki.bitlbee.org/HowtoFacebook">http://wiki.bitlbee.org/HowtoFacebook</a></p>
+
+<p><a href="https://nowhere.dk/articles/facebook-chat-in-bitlbee">https://nowhere.dk/articles/facebook-chat-in-bitlbee</a></p>
+
+    </article>
+  </div>
+</div>
+
+        <footer class="Footer">
+  <div class="Page">
+    <hr class="Line">
+
+    <p class="Paragraph">
+      Interested in working together?
+      I'm available
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">for hire!</a>
+      Reach me on
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">Twitter</a>.
+    </p>
+
+    <p class="Paragraph">
+      <span class="Text Text-small">
+        Thank you for visting. Feel free to engage with me on
+        <a href="https://twitter.com/gabrielgpoca">Twitter</a>.
+      </span>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-48359304-1', 'auto');
+ga('send', 'pageview');
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>

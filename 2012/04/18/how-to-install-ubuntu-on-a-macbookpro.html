@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>How to install Ubuntu on a MacbookPro</title>
+  <meta name="description" content="I wrote about my ubuntu installation on my macbook pro a long time ago but I’ve never published because I’ve never finished it. Here it is now.">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://gabrielpoca.com/2012/04/18/how-to-install-ubuntu-on-a-macbookpro.html">
+  <link rel="alternate" type="application/rss+xml" title="Gabriel Poça" href="http://gabrielpoca.com/feed.xml" />
+
+  <!--<link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,700,900,400italic,300italic' rel='stylesheet' type='text/css'>-->
+  <link href='http://fonts.googleapis.com/css?family=Raleway:700,400|Merriweather:400italic,400,300italic,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js">
+  </script>
+
+  <script src="/js/app.js">
+  </script>
+</head>
+
+  <body>
+    <div class="Layout">
+      <div class="Layout-sidebar">
+        <div class="Sidebar">
+  <div class="Sidebar-contentWrapper">
+    <div class="Sidebar-picture">
+      <img class="Gravatar" alt="Profile Picture" src="https://www.gravatar.com/avatar/2c4b850cf6a0a3be7a18c7840bc12435?s=600&r=g&d=mm"></img>
+    </div>
+    <h2 class="Sidebar-title">Gabriel Poça</h2>
+    <nav class="Sidebar-social">
+      <ul>
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://github.com/gabrielpoca"
+            target="_blank"><i class="fa fa-github"></i></a>
+        </li>
+        
+
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://twitter.com/gabrielgpoca"
+            target="_blank"><i class="fa fa-twitter"></i></a>
+        </li>
+        
+
+        <li class="Sidebar-socialItem">
+          <a href="/feed.xml"
+            target="_blank"><i class="fa fa-rss"></i></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+      </div>
+
+      <div class="Layout-content">
+        <div class="Page">
+
+  <div class="Post">
+    <header class="Post-header">
+      <h1 class="Post-title">How to install Ubuntu on a MacbookPro</h1>
+      <p class="post-meta">Apr 18, 2012</p>
+    </header>
+
+    <article class="Post-content">
+      <p>I wrote about my ubuntu installation on my macbook pro a long time ago but I’ve never published because I’ve never finished it. Here it is now.</p>
+
+<p>I’ve been waiting for a while to try a linux installation on my Macbook Pro. I have now a triple boot with Lion, Windows 7 and Ubuntu (actually is Xubunut now).</p>
+
+<p>I’ve just tried it and I’m probably never using it again, mostly because the battery, which gives about 3 hours on against about 6 on Lion. About Windows 7 I’ve installed it a long time ago. So this are the steps I followed:</p>
+
+<ol>
+  <li>Install and enable <a href="http://refit.sourceforge.net/">refit</a>.</li>
+  <li>Download your Ubuntu image and “burn” it to usb with <a href="http://unetbootin.sourceforge.net">unetbootin</a>.</li>
+  <li>Reboot with the usb inserted, and chose “Partition Tools” in refit. It will ask to update the partition table, do it. Then it reboots again.</li>
+  <li>When it opens again chose to start up from Ubuntu usb (you should see it side with OSX).</li>
+  <li>Proceed normally with the installation.</li>
+</ol>
+
+<p>You should pay attention if it asks to chose the place to install GRUB. In my installation it didn’t ask and everything went well, but in arch linux wiki they talk about related problems. Anyway, just don’t replace the MBR. I’ll try a different distro later, probably <a href="http://crunchbanglinux.org/">crunch bang</a>.</p>
+
+<p>About the working distro: Everything works fine. The trackpad is odd, or different, it doesn’t feel like it is supposed to, but I could get use to it. Also there are some minor issues on the keyboard lights (don’t know why but when I tried Xubuntu next it was fixed), but nothing really annoying. Just take a look around this <a href="https://help.ubuntu.com/community/MacBookPro8-2/Oneiric">here</a>, or <a href="https://wiki.ubuntu.com/MactelSupportTeam/CommunityHelpPages">here</a> if you’re macbook pro isn’t from late 2011.</p>
+
+<p>Besides the battery, the wireless really sucks. There are no official drivers and you get to use ndiswrapper with windows drivers or some strange ones I don’t really remember the name right now but are listed in those pages I referred to before. Anyhow you get a weak signal and it heats oddly, a lot.</p>
+
+<p>I could probably live with it, but I found my way around with OSX and I like it now.</p>
+
+    </article>
+  </div>
+</div>
+
+        <footer class="Footer">
+  <div class="Page">
+    <hr class="Line">
+
+    <p class="Paragraph">
+      Interested in working together?
+      I'm available
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">for hire!</a>
+      Reach me on
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">Twitter</a>.
+    </p>
+
+    <p class="Paragraph">
+      <span class="Text Text-small">
+        Thank you for visting. Feel free to engage with me on
+        <a href="https://twitter.com/gabrielgpoca">Twitter</a>.
+      </span>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-48359304-1', 'auto');
+ga('send', 'pageview');
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>

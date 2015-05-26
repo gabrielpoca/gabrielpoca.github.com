@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Offline Web Apps with Meteor</title>
+  <meta name="description" content="This blog post was written for Group Buddies Blog.">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://gabrielpoca.com/2014/11/26/offline-web-apps-with-meteor.html">
+  <link rel="alternate" type="application/rss+xml" title="Gabriel Poça" href="http://gabrielpoca.com/feed.xml" />
+
+  <!--<link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,700,900,400italic,300italic' rel='stylesheet' type='text/css'>-->
+  <link href='http://fonts.googleapis.com/css?family=Raleway:700,400|Merriweather:400italic,400,300italic,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js">
+  </script>
+
+  <script src="/js/app.js">
+  </script>
+</head>
+
+  <body>
+    <div class="Layout">
+      <div class="Layout-sidebar">
+        <div class="Sidebar">
+  <div class="Sidebar-contentWrapper">
+    <div class="Sidebar-picture">
+      <img class="Gravatar" alt="Profile Picture" src="https://www.gravatar.com/avatar/2c4b850cf6a0a3be7a18c7840bc12435?s=600&r=g&d=mm"></img>
+    </div>
+    <h2 class="Sidebar-title">Gabriel Poça</h2>
+    <nav class="Sidebar-social">
+      <ul>
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://github.com/gabrielpoca"
+            target="_blank"><i class="fa fa-github"></i></a>
+        </li>
+        
+
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://twitter.com/gabrielgpoca"
+            target="_blank"><i class="fa fa-twitter"></i></a>
+        </li>
+        
+
+        <li class="Sidebar-socialItem">
+          <a href="/feed.xml"
+            target="_blank"><i class="fa fa-rss"></i></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+      </div>
+
+      <div class="Layout-content">
+        <div class="Page">
+
+  <div class="Post">
+    <header class="Post-header">
+      <h1 class="Post-title">Offline Web Apps with Meteor</h1>
+      <p class="post-meta">Nov 26, 2014</p>
+    </header>
+
+    <article class="Post-content">
+      <p>This blog post was written for <a href="http://blog.groupbuddies.com/posts/45-offline-web-apps-with-meteor">Group Buddies Blog</a>.</p>
+
+<p>In this blog post I’m presenting a solution to make Meteor apps work completely offline. In fact, Meteor apps already work offline, as long as the user doesn’t close the browser.</p>
+
+<p>If you don’t know what Meteor is or how it works, I recommend that you take a look at the <a href="http://docs.meteor.com/#/basic/">meteor docs</a> before moving forward.</p>
+
+<p>One of the principles of Meteor is “Data on the Wire”, i.e., each client receives all assets upon connection, after which only data is sent between the client and the server.</p>
+
+<p>Another principle is “Database Everywhere”, i.e., each client has a subset of the server database that responds to the same operations with the same api.</p>
+
+<p>When offline, a client has everything needed to keep the app running. This article focuses on how to allow a user to reopen the application, while being offline, after the browser has been closed.</p>
+
+<h1 id="persisting-assets">Persisting assets</h1>
+
+<p>HTML5 made some progress in allowing web applications to be accessible offline. The result of it is the ApplicationCache interface. Since many people don’t know, or understand, <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache">AppCache</a>, here’s how it is defined in MDN (Mozilla Developer Network).</p>
+
+<blockquote>
+  <p>Developers can use the Application Cache (AppCache) interface to specify resources that the browser should cache and make available to offline users. Applications that are cached load and work correctly even if users click the refresh button when they are offline.</p>
+</blockquote>
+
+<p>AppCache stores all the application assets and allows a user to open them when there is no internet connection. For more details on AppCache I recommend <a href="http://www.html5rocks.com/en/tutorials/appcache/beginner/">this guide</a>.</p>
+
+<p>To start using AppCache on a Meteor application just add the package:</p>
+
+<pre><code>meteor add appcache
+</code></pre>
+
+<p>Don’t worry if the console logs say the app has more that 5 MB ( which is the recommended maximum). When Meteor builds for production it concatenates and minifies the assets. If it’s still more that 5 MB maybe you need to exclude some assets from AppCache.</p>
+
+<p>For instance, you can tell AppCache not to save an image:</p>
+
+<pre><code>Meteor.AppCache.config
+  onlineOnly: [
+    '/bg.png'
+    ]
+</code></pre>
+
+<p>The <a href="https://github.com/meteor/meteor/wiki/AppCache">documentation</a> is a good follow up on this topic.</p>
+
+<h1 id="persisting-data">Persisting data</h1>
+
+<p>The client side database is in-memory. When offline, Meteor will store both the current working database and a list of messages to send to the server on reconnect. There is no (official) way to persist this data to disk, and for this reason the information is lost when the browser is closed.</p>
+
+<p>To overcome this limitation, there is <a href="https://github.com/GroundMeteor/db">GroundDB</a>, a fast and thin layer providing Meteor with offline database and methods, saving them into the <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage#localStorage"><code>localStorage</code></a>.</p>
+
+<p>To start using GroundDB add the package.</p>
+
+<pre><code>meteor add ground:db
+</code></pre>
+
+<p>Now your subscriptions will be available when you’re offline. If you’re using IronRouter you should not use the <code>waitOn</code> feature, since this is going to make the application hold until the server responds. Instead, subscribe to the data you want offline on the application startup. For instance, in the file <code>lib/router.coffee</code> you can have something like the following:</p>
+
+<pre><code>if Meteor.isClient
+  subscribed = false
+  Tracker.autorun () -&gt;
+    if Meteor.user() &amp;&amp; !subscribed
+      Meteor.subscribe 'users'
+      Meteor.subscribe 'trips'
+      Meteor.subscribe 'expenses'
+      Meteor.subscribe 'notifications'
+      subscribed = true
+</code></pre>
+
+<p>This way the data will always be on <code>localStorage</code> when the user goes offline. This also means that you need to care about the amount of information that you save locally.</p>
+
+<p>If you are interested in this topic, this <a href="https://groups.google.com/forum/#!searchin/meteor-talk/minimongo$20offline/meteor-talk/tGto0cCsvXA/dH3uZjEd9y4J">google groups thread</a> is a good follow up.</p>
+
+<h1 id="summary">Summary</h1>
+
+<p>Making an offline web application requires a different ways of thinking about a solution, and there are many plenty problems to solve. These packages help pushing forward on making offline web applications. Feel free to ask questions, I’m not an expert but I’ll try my best to answer.</p>
+
+<p>As an example, you can run <a href="https://github.com/groupbuddies/tripl.it.git">tripl.it</a> and see it’s source code. It’s a mobile application that works offline.</p>
+
+    </article>
+  </div>
+</div>
+
+        <footer class="Footer">
+  <div class="Page">
+    <hr class="Line">
+
+    <p class="Paragraph">
+      Interested in working together?
+      I'm available
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">for hire!</a>
+      Reach me on
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">Twitter</a>.
+    </p>
+
+    <p class="Paragraph">
+      <span class="Text Text-small">
+        Thank you for visting. Feel free to engage with me on
+        <a href="https://twitter.com/gabrielgpoca">Twitter</a>.
+      </span>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-48359304-1', 'auto');
+ga('send', 'pageview');
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>

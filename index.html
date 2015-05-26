@@ -1,24 +1,298 @@
----
-layout: default
----
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<div class="Page">
+  <title>Gabriel Poça</title>
+  <meta name="description" content="Personal technical blog.">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://gabrielpoca.com/">
+  <link rel="alternate" type="application/rss+xml" title="Gabriel Poça" href="http://gabrielpoca.com/feed.xml" />
+
+  <!--<link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,700,900,400italic,300italic' rel='stylesheet' type='text/css'>-->
+  <link href='http://fonts.googleapis.com/css?family=Raleway:700,400|Merriweather:400italic,400,300italic,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js">
+  </script>
+
+  <script src="/js/app.js">
+  </script>
+</head>
+
+  <body>
+    <div class="Layout">
+      <div class="Layout-sidebar">
+        <div class="Sidebar">
+  <div class="Sidebar-contentWrapper">
+    <div class="Sidebar-picture">
+      <img class="Gravatar" alt="Profile Picture" src="https://www.gravatar.com/avatar/2c4b850cf6a0a3be7a18c7840bc12435?s=600&r=g&d=mm"></img>
+    </div>
+    <h2 class="Sidebar-title">Gabriel Poça</h2>
+    <nav class="Sidebar-social">
+      <ul>
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://github.com/gabrielpoca"
+            target="_blank"><i class="fa fa-github"></i></a>
+        </li>
+        
+
+        
+        <li class="Sidebar-socialItem">
+          <a href="https://twitter.com/gabrielgpoca"
+            target="_blank"><i class="fa fa-twitter"></i></a>
+        </li>
+        
+
+        <li class="Sidebar-socialItem">
+          <a href="/feed.xml"
+            target="_blank"><i class="fa fa-rss"></i></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+      </div>
+
+      <div class="Layout-content">
+        <div class="Page">
   <ul class="PostsList">
-    {% for post in site.posts %}
+    
     <li class="PostsList-post">
-      <a href="{{ post.url | prepend: site.baseurl }}" class="CompactPost">
+      <a href="/2015/09/04/a-better-reset-for-the-mobile-web.html" class="CompactPost">
         <h2 class="CompactPost-title">
-          {{ post.title }}
+          A better reset for the mobile web
         </h2>
         <div>
           <span class="CompactPost-meta">
             <span class="Text Text-small">
-              {{ post.date | date: "%b %-d, %Y" }}
+              Sep 4, 2015
             </span>
           </span>
         </div>
       </a>
     </li>
-    {% endfor %}
+    
+    <li class="PostsList-post">
+      <a href="/2014/11/26/offline-web-apps-with-meteor.html" class="CompactPost">
+        <h2 class="CompactPost-title">
+          Offline Web Apps with Meteor
+        </h2>
+        <div>
+          <span class="CompactPost-meta">
+            <span class="Text Text-small">
+              Nov 26, 2014
+            </span>
+          </span>
+        </div>
+      </a>
+    </li>
+    
+    <li class="PostsList-post">
+      <a href="/2014/06/24/streaming-microphone-from-browser-to-nodejs-no-plugin.html" class="CompactPost">
+        <h2 class="CompactPost-title">
+          Tutorial: HTML Audio Capture streaming to Node.js (no browser extensions)
+        </h2>
+        <div>
+          <span class="CompactPost-meta">
+            <span class="Text Text-small">
+              Jun 24, 2014
+            </span>
+          </span>
+        </div>
+      </a>
+    </li>
+    
+    <li class="PostsList-post">
+      <a href="/2014/06/04/dipping-the-toes-in-phonegap.html" class="CompactPost">
+        <h2 class="CompactPost-title">
+          Dipping the toes in Phonegap
+        </h2>
+        <div>
+          <span class="CompactPost-meta">
+            <span class="Text Text-small">
+              Jun 4, 2014
+            </span>
+          </span>
+        </div>
+      </a>
+    </li>
+    
+    <li class="PostsList-post">
+      <a href="/2013/12/03/playing-with-google-apps-script.html" class="CompactPost">
+        <h2 class="CompactPost-title">
+          Playing with Google Apps Script
+        </h2>
+        <div>
+          <span class="CompactPost-meta">
+            <span class="Text Text-small">
+              Dec 3, 2013
+            </span>
+          </span>
+        </div>
+      </a>
+    </li>
+    
+    <li class="PostsList-post">
+      <a href="/2013/08/10/jekyll-nginx-capistrano.html" class="CompactPost">
+        <h2 class="CompactPost-title">
+          Jekyll, nginx and capistrano
+        </h2>
+        <div>
+          <span class="CompactPost-meta">
+            <span class="Text Text-small">
+              Aug 10, 2013
+            </span>
+          </span>
+        </div>
+      </a>
+    </li>
+    
+    <li class="PostsList-post">
+      <a href="/2012/08/24/about_codebits_last_year.html" class="CompactPost">
+        <h2 class="CompactPost-title">
+          About Codebits Last Year
+        </h2>
+        <div>
+          <span class="CompactPost-meta">
+            <span class="Text Text-small">
+              Aug 24, 2012
+            </span>
+          </span>
+        </div>
+      </a>
+    </li>
+    
+    <li class="PostsList-post">
+      <a href="/2012/07/08/about_jekyll_and_github_pages_and_plugins.html" class="CompactPost">
+        <h2 class="CompactPost-title">
+          About Jekyll, Github Pages and Plugins
+        </h2>
+        <div>
+          <span class="CompactPost-meta">
+            <span class="Text Text-small">
+              Jul 8, 2012
+            </span>
+          </span>
+        </div>
+      </a>
+    </li>
+    
+    <li class="PostsList-post">
+      <a href="/2012/05/26/macvim-tab-navigation.html" class="CompactPost">
+        <h2 class="CompactPost-title">
+          MacVim Tab Navigation
+        </h2>
+        <div>
+          <span class="CompactPost-meta">
+            <span class="Text Text-small">
+              May 26, 2012
+            </span>
+          </span>
+        </div>
+      </a>
+    </li>
+    
+    <li class="PostsList-post">
+      <a href="/2012/04/24/magnet-links-and-rtorrent.html" class="CompactPost">
+        <h2 class="CompactPost-title">
+          Magnet Links and rtorrent
+        </h2>
+        <div>
+          <span class="CompactPost-meta">
+            <span class="Text Text-small">
+              Apr 24, 2012
+            </span>
+          </span>
+        </div>
+      </a>
+    </li>
+    
+    <li class="PostsList-post">
+      <a href="/2012/04/18/how-to-install-ubuntu-on-a-macbookpro.html" class="CompactPost">
+        <h2 class="CompactPost-title">
+          How to install Ubuntu on a MacbookPro
+        </h2>
+        <div>
+          <span class="CompactPost-meta">
+            <span class="Text Text-small">
+              Apr 18, 2012
+            </span>
+          </span>
+        </div>
+      </a>
+    </li>
+    
+    <li class="PostsList-post">
+      <a href="/2012/03/22/irssi-bitlbee-facebook-chat.html" class="CompactPost">
+        <h2 class="CompactPost-title">
+          Irssi, Bitlbee and Facebook Chat
+        </h2>
+        <div>
+          <span class="CompactPost-meta">
+            <span class="Text Text-small">
+              Mar 22, 2012
+            </span>
+          </span>
+        </div>
+      </a>
+    </li>
+    
+    <li class="PostsList-post">
+      <a href="/2012/03/09/screen-vertical-split.html" class="CompactPost">
+        <h2 class="CompactPost-title">
+          Screen Vertical Split
+        </h2>
+        <div>
+          <span class="CompactPost-meta">
+            <span class="Text Text-small">
+              Mar 9, 2012
+            </span>
+          </span>
+        </div>
+      </a>
+    </li>
+    
   </ul>
 </div>
+
+        <footer class="Footer">
+  <div class="Page">
+    <hr class="Line">
+
+    <p class="Paragraph">
+      Interested in working together?
+      I'm available
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">for hire!</a>
+      Reach me on
+      <a class="Text Text--branding" href="https://twitter.com/gabrielgpoca">Twitter</a>.
+    </p>
+
+    <p class="Paragraph">
+      <span class="Text Text-small">
+        Thank you for visting. Feel free to engage with me on
+        <a href="https://twitter.com/gabrielgpoca">Twitter</a>.
+      </span>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-48359304-1', 'auto');
+ga('send', 'pageview');
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>

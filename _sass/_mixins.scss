@@ -1,7 +1,0 @@
-@mixin hover($properties: (color), $color: $brand-color) {
-  &:hover {
-    @each $prop in $properties {
-      #{$prop}: $color;
-    }
-  }
-}
