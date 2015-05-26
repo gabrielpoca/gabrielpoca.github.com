@@ -20,3 +20,9 @@
 .Text.Text-small {
   font-size: $small-font-size;
 }
+
+.Text.Text--branding {
+  color: $brand-color-dark;
+  font-weight: bolder;
+  text-decoration: none;
+}
