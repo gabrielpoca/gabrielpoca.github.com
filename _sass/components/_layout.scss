@@ -1,19 +1,13 @@
 .Layout {
   $sidebar-height: 100px;
 
-  position: relative;
-
   .Layout-sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
     width: 100%;
     height: $sidebar-height;
-    z-index: 1;
   }
 
   .Layout-content {
-    margin-top: $sidebar-height * 2;
+    margin-top: $sidebar-height;
     width: 100%;
   }
 }
