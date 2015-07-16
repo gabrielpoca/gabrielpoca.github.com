@@ -246,18 +246,12 @@ a, a:visited {
       width: 100%;
       transform: translateY(-50%);
       -webkit-transform: translateY(-50%); } }
-.Layout {
-  position: relative; }
-  .Layout .Layout-sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100px;
-    z-index: 1; }
-  .Layout .Layout-content {
-    margin-top: 200px;
-    width: 100%; }
+.Layout .Layout-sidebar {
+  width: 100%;
+  height: 100px; }
+.Layout .Layout-content {
+  margin-top: 100px;
+  width: 100%; }
 
 @media screen and (max-width: 600px) {
   .Layout .Layout-sidebar {
