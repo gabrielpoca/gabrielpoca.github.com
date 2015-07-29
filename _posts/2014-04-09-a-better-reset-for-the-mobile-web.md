@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "A better reset for the mobile web"
-date: 2015-09-04
+date: 2014-09-04
 comments: true
 ---
 This blog post was written for [Group Buddies Blog](https://blog.groupbuddies.com/posts/53-a-better-reset-for-the-mobile-web).
